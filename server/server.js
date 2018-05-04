@@ -14,7 +14,7 @@ setInterval(update, deltaTime);
 
 var battle = fun();
 
-battle.init(deltaTime);
+battle.init(deltaTime * 0.001);
 
 var player = [];
 
@@ -72,7 +72,7 @@ function getData(client, tag, data){
 
 		if(client.playerID){
 
-			battle.command(player[client.playerID], parseInt(data));
+			battle.command(client.playerID, parseInt(data));
 		}
 	}
 	else if(tag == "refresh"){
