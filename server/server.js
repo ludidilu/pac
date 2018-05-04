@@ -6,7 +6,7 @@ io.listen(3000);
 
 var messageTag = ["join","command","refresh"];
 
-var fun = require("e:/battle/battle");
+var fun = require("../lib/battle/battle");
 
 const deltaTime = 20;
 
