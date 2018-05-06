@@ -8,7 +8,7 @@ class Main extends egret.DisplayObjectContainer {
 
     private tagArr:Array<string> = ["refresh", "update"];
 
-    private heroArr:{[key:string]:egret.Sprite} = {};
+    private heroArr:{[key:string]:egret.DisplayObjectContainer} = {};
 
     private btArr:Array<egret.Sprite> = [];
 
@@ -22,7 +22,7 @@ class Main extends egret.DisplayObjectContainer {
 
         this.battleObj.init(this.deltaTime * 0.001);
 
-        this.socket = io.connect("1.1.1.118:3000");
+        this.socket = io.connect("127.0.0.1:3000");
 
         this.socket.on("connect", this.connected.bind(this));
 
@@ -49,29 +49,18 @@ class Main extends egret.DisplayObjectContainer {
             dele();
         }
 
-        var update = this.update.bind(this);
-
-        egret.lifecycle.addLifecycleListener((context) => {
-            // custom lifecycle plugin
-
-            
-
-            context.onUpdate = () => {
-
-                update();
-            }
-        })
+        egret.startTick(this.update, this);
 
         this.addEventListener(egret.Event.ADDED_TO_STAGE, this.onAddToStage, this);
     }
 
-    private onAddToStage(){
-
+    private onAddToStage():void
+    {
         this.initUi();
     }
 
-    private initUi(){
-
+    private initUi():void
+    {
         var sprite:egret.Sprite = new egret.Sprite();
         sprite.graphics.beginFill(0x000000);
         sprite.graphics.drawRect(0, 0, this.stage.stageWidth, this.stage.stageHeight);
@@ -153,15 +142,15 @@ class Main extends egret.DisplayObjectContainer {
         }
     }
 
-    private touchBegin(index){
-
+    private touchBegin(index):void
+    {
         this.btArr[index-1].alpha = 0.5;
 
         this.socket.emit("command", index);
     }
 
-    private touchEnd(){
-        
+    private touchEnd():void
+    {
         for(var i = 0 ; i < 4 ; i++){
             
             var sprite = this.btArr[i];
@@ -172,21 +161,42 @@ class Main extends egret.DisplayObjectContainer {
         this.socket.emit("command", 0);
     }
 
-    private update(){
+    private update(time):boolean
+    {
+        SuperTween.Instance.Update();
 
+        this.gameUpdate();
+
+        return true;
+    }
+
+    private gameUpdate():void
+    {
         for(var id in this.battleObj.heroArr){
+
+            var heroObj:hero = this.battleObj.heroArr[id];
 
             if(!this.heroArr[id]){
 
-                console.log("add hero!");
+                var container:egret.DisplayObjectContainer = new egret.DisplayObjectContainer();
 
                 var sprite:egret.Sprite = new egret.Sprite();
                 sprite.graphics.beginFill(0xff0000);
                 sprite.graphics.drawRect(0, 0, 50, 50);
                 sprite.graphics.endFill();
-                this.addChild(sprite);
 
-                this.heroArr[id] = sprite;
+                sprite.x = -25;
+                sprite.y = -25;
+
+                container.addChild(sprite);
+
+                container.x = heroObj.x;
+
+                container.y = heroObj.y;
+
+                this.addChild(container);
+
+                this.heroArr[id] = container;
             }
         }
 
@@ -194,11 +204,11 @@ class Main extends egret.DisplayObjectContainer {
 
         for(var id in this.heroArr){
 
-            var sprite = this.heroArr[id];
+            container = this.heroArr[id];
 
             if(!this.battleObj.heroArr[id]){
 
-                this.removeChild(sprite);
+                this.removeChild(container);
 
                 if(!del){
 
@@ -209,11 +219,28 @@ class Main extends egret.DisplayObjectContainer {
             }
             else{
 
-                var heroObj:hero = this.battleObj.heroArr[id];
+                heroObj = this.battleObj.heroArr[id];
 
-                sprite.x = heroObj.x;
+                if(heroObj.x != container.x || heroObj.y != container.y){
 
-                sprite.y = heroObj.y;
+                    if(heroObj.dir == 0){
+
+                        
+
+                        var tw:egret.Tween = egret.Tween.get( container );
+                        tw.to( {x:heroObj.x,y:heroObj.y}, 500 );
+                    }
+                    else{
+
+                        if(heroObj.dir == 1){
+
+                        }
+                    }
+                }
+
+                container.x = heroObj.x;
+
+                container.y = heroObj.y;
             }
         }
 
@@ -226,8 +253,8 @@ class Main extends egret.DisplayObjectContainer {
         }
     }
 
-    private getMessage(tag, data){
-
+    private getMessage(tag, data):void
+    {
         if(tag == "refresh"){
 
             var arr: {[key:string]:hero} = JSON.parse(data);
@@ -242,9 +269,9 @@ class Main extends egret.DisplayObjectContainer {
         }
     }
 
-    private connected(){
-
-        var name = Math.floor(Math.random() * 10000).toString();
+    private connected():void
+    {
+        var name = Math.floor(Math.random() * 100000000).toString();
 
         console.log("name:" + name);
 
