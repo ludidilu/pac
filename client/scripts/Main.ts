@@ -1,3 +1,11 @@
+class TweenUnit{
+    public obj:egret.DisplayObject;
+    public startX:number;
+    public endX:number;
+    public startY:number;
+    public endY:number;
+}
+
 class Main extends egret.DisplayObjectContainer {
 
     private socket:SocketIOClient.Socket;
@@ -11,6 +19,10 @@ class Main extends egret.DisplayObjectContainer {
     private heroArr:{[key:string]:egret.DisplayObjectContainer} = {};
 
     private btArr:Array<egret.Sprite> = [];
+
+    private tweenList:Array<TweenUnit> = [];
+
+    private tweenID:number = -1;
 
     public constructor() {
 
@@ -165,13 +177,20 @@ class Main extends egret.DisplayObjectContainer {
     {
         SuperTween.Instance.Update();
 
-        this.gameUpdate();
-
         return true;
     }
 
     private gameUpdate():void
     {
+        if(this.tweenID != -1){
+
+            SuperTween.Instance.Remove(this.tweenID, false);
+
+            this.tweenID = -1;
+
+            this.tweenList = [];
+        }
+
         for(var id in this.battleObj.heroArr){
 
             var heroObj:hero = this.battleObj.heroArr[id];
@@ -225,16 +244,21 @@ class Main extends egret.DisplayObjectContainer {
 
                     if(heroObj.dir == 0){
 
-                        
+                        var unit:TweenUnit = new TweenUnit();
 
-                        var tw:egret.Tween = egret.Tween.get( container );
-                        tw.to( {x:heroObj.x,y:heroObj.y}, 500 );
+                        unit.obj = container;
+
+                        unit.startX = container.x;
+                        unit.endX = heroObj.x;
+
+                        unit.startY = container.y;
+                        unit.endY = heroObj.y;
+
+                        this.tweenList.push(unit);
                     }
-                    else{
+                    else if(heroObj.dir == 1){
 
-                        if(heroObj.dir == 1){
-
-                        }
+                        
                     }
                 }
 
@@ -266,6 +290,8 @@ class Main extends egret.DisplayObjectContainer {
             var roundData : roundData = JSON.parse(data);
 
             this.battleObj.clientUpdate(roundData);
+
+            this.gameUpdate();
         }
     }
 
