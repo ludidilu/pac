@@ -90,8 +90,34 @@ class Main extends egret.DisplayObjectContainer {
         sprite.graphics.endFill();
         this.addChild(sprite);
 
-        
+        sprite.touchEnabled = true;
 
+        var dele = function(e:egret.Event){
+
+            var touch:egret.TouchEvent = <egret.TouchEvent>e;
+
+            for(var i:number = 0 ; i < 4 ; i++){
+
+                var bt:egret.Sprite = this.btArr[i];
+
+                if(bt.getTransformedBounds(this).contains(touch.stageX, touch.stageY)){
+
+                    this.touchBegin(i + 1);
+
+                    return;
+                }
+            }
+
+            this.touchEnd();
+        }
+
+        sprite.addEventListener(egret.TouchEvent.TOUCH_BEGIN, dele, this);
+
+        sprite.addEventListener(egret.TouchEvent.TOUCH_MOVE, dele, this);
+
+        sprite.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEnd, this);
+
+        sprite.addEventListener(egret.TouchEvent.TOUCH_RELEASE_OUTSIDE, this.touchEnd, this);
 
         sprite = new egret.Sprite();
         sprite.graphics.beginFill(0xffffff);
@@ -100,8 +126,6 @@ class Main extends egret.DisplayObjectContainer {
         sprite.x = 50;
         sprite.y = this.stage.stageHeight - 50 * 3;
         this.addChild(sprite);
-
-        sprite.touchEnabled = true;
 
         this.btArr.push(sprite);
 
@@ -112,8 +136,6 @@ class Main extends egret.DisplayObjectContainer {
         sprite.x = 50;
         sprite.y = this.stage.stageHeight - 50;
         this.addChild(sprite);
-
-        sprite.touchEnabled = true;
 
         this.btArr.push(sprite);
 
@@ -126,8 +148,6 @@ class Main extends egret.DisplayObjectContainer {
         sprite.y = this.stage.stageHeight - 50 * 2;
         this.addChild(sprite);
 
-        sprite.touchEnabled = true;
-
         this.btArr.push(sprite);
 
 
@@ -139,30 +159,7 @@ class Main extends egret.DisplayObjectContainer {
         sprite.y = this.stage.stageHeight - 50 * 2;
         this.addChild(sprite);
 
-        sprite.touchEnabled = true;
-
         this.btArr.push(sprite);
-
-        for(var i = 0 ; i < 4 ; i++){
-
-            var dele2 = function(){
-
-                var k = i;
-
-                var dele = function(){
-
-                    this.touchBegin(k + 1);
-                }
-
-                this.btArr[k].addEventListener(egret.TouchEvent.TOUCH_BEGIN, dele, this);
-
-                this.btArr[k].addEventListener(egret.TouchEvent.TOUCH_END, this.touchEnd, this);
-
-                this.btArr[k].addEventListener(egret.TouchEvent.TOUCH_RELEASE_OUTSIDE, this.touchEnd, this);
-            }
-
-            dele2.bind(this)();
-        }
     }
 
     private touchBegin(index):void
