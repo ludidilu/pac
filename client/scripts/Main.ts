@@ -36,7 +36,9 @@ class Main extends egret.DisplayObjectContainer {
 
         this.battleObj.init(this.deltaTime * 0.001);
 
-        this.socket = io.connect("127.0.0.1:3000");
+        // this.socket = io.connect("106.75.222.192:1999");
+
+        this.socket = io.connect("127.0.0.1:1999");
 
         this.socket.on("connect", this.connected.bind(this));
 

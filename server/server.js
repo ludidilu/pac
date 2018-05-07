@@ -2,7 +2,7 @@ var io = require('socket.io')();
 
 io.on('connection', connection);
 
-io.listen(3000);
+io.listen(1999);
 
 var messageTag = ["join","command","refresh"];
 
