@@ -36,13 +36,27 @@ class Main extends egret.DisplayObjectContainer {
 
         this.battleObj.init(this.deltaTime * 0.001);
 
+        egret.startTick(this.update, this);
+
+        this.addEventListener(egret.Event.ADDED_TO_STAGE, this.onAddToStage, this);
+    }
+
+    private onAddToStage():void
+    {
+        this.initSocket();
+
+        this.initUi();
+    }
+
+    private initSocket():void{
+
         // this.socket = io.connect("106.75.222.192:1999");
 
         this.socket = io.connect("127.0.0.1:1999");
 
-        this.socket.on("connect", this.connected.bind(this));
+        var socket = this.socket;        
 
-        var socket = this.socket;
+        this.socket.on("connect", this.connected.bind(this));
 
         var tagArr = this.tagArr;
 
@@ -64,19 +78,12 @@ class Main extends egret.DisplayObjectContainer {
 
             dele();
         }
-
-        egret.startTick(this.update, this);
-
-        this.addEventListener(egret.Event.ADDED_TO_STAGE, this.onAddToStage, this);
-    }
-
-    private onAddToStage():void
-    {
-        this.initUi();
     }
 
     private initUi():void
     {
+        console.log("egret.Capabilities.renderMode:" + egret.Capabilities.renderMode);
+
         var sprite:egret.Sprite = new egret.Sprite();
         sprite.graphics.beginFill(0x000000);
         sprite.graphics.drawRect(0, 0, this.stage.stageWidth, this.stage.stageHeight);
@@ -205,15 +212,32 @@ class Main extends egret.DisplayObjectContainer {
 
                 var container:egret.DisplayObjectContainer = new egret.DisplayObjectContainer();
 
-                var sprite:egret.Sprite = new egret.Sprite();
-                sprite.graphics.beginFill(0xff0000);
-                sprite.graphics.drawRect(0, 0, 50, 50);
-                sprite.graphics.endFill();
+                var dele = function(){
 
-                sprite.x = -25;
-                sprite.y = -25;
+                    var c = container;
 
-                container.addChild(sprite);
+                    var getImg = function(event:egret.Event){
+
+                        var loader:egret.ImageLoader = event.currentTarget;  
+
+                        var tex:egret.Texture = new egret.Texture();
+
+                        tex.bitmapData = loader.data;
+
+                        var bitmap:egret.Bitmap = new egret.Bitmap(tex);
+
+                        bitmap.x = -0.5 * bitmap.width;
+                        bitmap.y = -0.5 * bitmap.height;
+
+                        c.addChild(bitmap);
+                    }
+
+                    var imgLoader:egret.ImageLoader = new egret.ImageLoader;
+                    imgLoader.once( egret.Event.COMPLETE, getImg, this ); 
+                    imgLoader.load( "resource/assets/red_point.png" );
+                }
+                
+                dele.bind(this)();
 
                 container.x = heroObj.x;
 
@@ -263,6 +287,20 @@ class Main extends egret.DisplayObjectContainer {
             }
         }
     }
+
+
+    public getNetImage(textureObj:any,url:string):void{
+        var imgLoader:egret.ImageLoader = new egret.ImageLoader;
+        imgLoader.crossOrigin = "anonymous";
+        imgLoader.once( egret.Event.COMPLETE, (evt:egret.Event)=>{
+           var loader:egret.ImageLoader = evt.currentTarget;
+           var texture = new egret.Texture();
+           texture.bitmapData = loader.data;
+           textureObj["texture"] = texture;
+        }, this ); 
+        imgLoader.load(url);
+    }
+
 
     private AddTween(heroObj:hero, container:egret.DisplayObject){
 
