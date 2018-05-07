@@ -52,7 +52,7 @@ class Main extends egret.DisplayObjectContainer {
 
         // this.socket = io.connect("106.75.222.192:1999");
 
-        this.socket = io.connect("127.0.0.1:1999");
+        this.socket = io.connect("1.1.1.118:1999");
 
         var socket = this.socket;        
 
@@ -164,7 +164,17 @@ class Main extends egret.DisplayObjectContainer {
 
     private touchBegin(index):void
     {
-        this.btArr[index-1].alpha = 0.5;
+        for(var i = 0 ; i < 4 ; i++){
+
+            if(i == index - 1){
+
+                this.btArr[i].alpha = 0.5;
+            }
+            else{
+
+                this.btArr[i].alpha = 1;
+            }
+        }
 
         this.socket.emit("command", index);
     }
