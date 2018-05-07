@@ -4,18 +4,22 @@ class Timer
 
     private static lastTime:number = 0;
 
+    private static nowTime:number;
+
+    static update(nowTime:number){
+        Timer.nowTime = nowTime;
+    }
+
     static getUnscaledTime() {
-        return egret.getTimer();
+        return Timer.nowTime;
     }
 
     static getTime(){
-        var time = egret.getTimer();
-        return Timer.lastTime + (time - Timer.lastTime) * Timer.scale;
+        return Timer.lastTime + (Timer.nowTime - Timer.lastTime) * Timer.scale;
     }
 
     static setTimeScale(scale:number){
-        var time = egret.getTimer();
-        Timer.lastTime = Timer.lastTime + (time - Timer.lastTime) * Timer.scale;
+        Timer.lastTime = Timer.lastTime + (Timer.nowTime - Timer.lastTime) * Timer.scale;
         Timer.scale = scale;
     }
 }

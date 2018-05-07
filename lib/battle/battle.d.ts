@@ -7,6 +7,8 @@ declare class battle{
 	clientUpdate(data:roundData):void;
 
 	setRefreshData(data:{[key:string]:hero}):void;
+
+	speed:number;
 }
 
 declare class roundData{
@@ -28,4 +30,3 @@ declare class hero{
 }
 
 declare function fun():battle;
-

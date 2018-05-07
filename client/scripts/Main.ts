@@ -24,6 +24,8 @@ class Main extends egret.DisplayObjectContainer {
 
     private tweenID:number = -1;
 
+    private tweenTime:number = 0.5;
+
     public constructor() {
 
         super();
@@ -175,6 +177,8 @@ class Main extends egret.DisplayObjectContainer {
 
     private update(time):boolean
     {
+        Timer.update(time);
+
         SuperTween.Instance.Update();
 
         return true;
@@ -240,32 +244,13 @@ class Main extends egret.DisplayObjectContainer {
 
                 heroObj = this.battleObj.heroArr[id];
 
-                if(heroObj.x != container.x || heroObj.y != container.y){
-
-                    if(heroObj.dir == 0){
-
-                        var unit:TweenUnit = new TweenUnit();
-
-                        unit.obj = container;
-
-                        unit.startX = container.x;
-                        unit.endX = heroObj.x;
-
-                        unit.startY = container.y;
-                        unit.endY = heroObj.y;
-
-                        this.tweenList.push(unit);
-                    }
-                    else if(heroObj.dir == 1){
-
-                        
-                    }
-                }
-
-                container.x = heroObj.x;
-
-                container.y = heroObj.y;
+                this.AddTween(heroObj, container);
             }
+        }
+
+        if(this.tweenList.length > 0){
+
+            this.tweenID = SuperTween.Instance.To(0,1,this.tweenTime,this.TweenTo.bind(this), this.TweenEnd.bind(this), false);
         }
 
         if(del){
@@ -275,6 +260,89 @@ class Main extends egret.DisplayObjectContainer {
                 delete this.heroArr[id];
             }
         }
+    }
+
+    private AddTween(heroObj:hero, container:egret.DisplayObject){
+
+        if(heroObj.dir == 0){
+
+            if(Math.abs(heroObj.x - container.x) > 0.01 || Math.abs(heroObj.y - container.y) > 0.01){
+
+                var unit:TweenUnit = new TweenUnit();
+
+                unit.endX = heroObj.x;
+
+                unit.endY = heroObj.y;
+
+                unit.obj = container;
+
+                unit.startX = container.x;
+
+                unit.startY = container.y;
+
+                this.tweenList.push(unit);
+            }
+        }
+        else{
+
+            var unit:TweenUnit = new TweenUnit();
+
+            if(heroObj.dir == 1){
+
+                unit.endX = heroObj.x;
+
+                unit.endY = heroObj.y - this.battleObj.speed * this.tweenTime;
+            }
+            else if(heroObj.dir == 2){
+
+                unit.endX = heroObj.x;
+
+                unit.endY = heroObj.y + this.battleObj.speed * this.tweenTime;
+            }
+            else if(heroObj.dir == 3){
+
+                unit.endX = heroObj.x - this.battleObj.speed * this.tweenTime;
+
+                unit.endY = heroObj.y;
+            }
+            else if(heroObj.dir == 4){
+
+                unit.endX = heroObj.x + this.battleObj.speed * this.tweenTime;
+
+                unit.endY = heroObj.y;
+            }
+
+            unit.obj = container;
+
+            unit.startX = container.x;
+
+            unit.startY = container.y;
+
+            this.tweenList.push(unit);
+        }
+    }
+
+    private TweenTo(value:number){
+
+        for(var key in this.tweenList){
+
+            var unit:TweenUnit = this.tweenList[key];
+
+            var x:number = unit.startX + (unit.endX - unit.startX) * value;
+
+            var y:number = unit.startY + (unit.endY - unit.startY) * value;
+
+            unit.obj.x = x;
+
+            unit.obj.y = y;
+        }
+    }
+
+    private TweenEnd(){
+
+        this.tweenID = -1;
+
+        this.tweenList = [];
     }
 
     private getMessage(tag, data):void
