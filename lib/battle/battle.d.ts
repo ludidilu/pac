@@ -2,11 +2,36 @@ declare class battle{
 
 	heroArr:{[key:string]:hero};
 	
-	init():void;
+	init(mapWidth:number, mapHeight:number, mapScale:number, obstacle:{[key:number]:number}, speed:number):void;
 
 	clientUpdate(data:roundData):void;
 
-	setRefreshData(data:{[key:string]:hero}):void;
+	setRefreshData(data:refreshData):void;
+
+	mapWidth:number;
+
+	mapHeight:number;
+
+	mapScale:number;
+
+	mapUnitWidth:number;
+
+	obstacle:{[key:number]:number};
+
+	speed:number;
+}
+
+declare class refreshData{
+
+	heroArr:{[key:string]:hero};
+
+	mapWidth:number;
+
+	mapHeight:number;
+
+	mapScale:number;
+
+	obstacle:{[key:number]:number};
 
 	speed:number;
 }
