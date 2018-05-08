@@ -20,11 +20,7 @@ class Main extends egret.DisplayObjectContainer {
 
     private btArr:Array<egret.Sprite> = [];
 
-    private tweenList:Array<TweenUnit> = [];
-
-    private tweenID:number = -1;
-
-    private tweenTime:number = 0.5;
+    private lastGetServerDataTime:number = 0;
 
     public constructor() {
 
@@ -197,19 +193,14 @@ class Main extends egret.DisplayObjectContainer {
 
         SuperTween.Instance.Update();
 
+        this.updateHero();
+
         return true;
     }
 
     private gameUpdate():void
     {
-        if(this.tweenID != -1){
-
-            SuperTween.Instance.Remove(this.tweenID, false);
-
-            this.tweenID = -1;
-
-            this.tweenList = [];
-        }
+        this.lastGetServerDataTime = Timer.getUnscaledTime();
 
         for(var id in this.battleObj.heroArr){
 
@@ -273,17 +264,6 @@ class Main extends egret.DisplayObjectContainer {
 
                 del.push(id);
             }
-            else{
-
-                heroObj = this.battleObj.heroArr[id];
-
-                this.AddTween(heroObj, container);
-            }
-        }
-
-        if(this.tweenList.length > 0){
-
-            this.tweenID = SuperTween.Instance.To(0,1,this.tweenTime,this.TweenTo.bind(this), this.TweenEnd.bind(this), false);
         }
 
         if(del){
@@ -295,6 +275,32 @@ class Main extends egret.DisplayObjectContainer {
         }
     }
 
+    private updateHero():void{
+
+        for(var key in this.battleObj.heroArr){
+
+            var hero = this.heroArr[key];
+
+            var heroObj = this.battleObj.heroArr[key];
+
+            if(heroObj.dir == 0){
+
+                hero.x = heroObj.x;
+
+                hero.y = heroObj.y;
+
+            }else{
+
+                var moveSpeed = this.battleObj.moveSpeed * (Timer.getUnscaledTime() - this.lastGetServerDataTime) / this.deltaTime;
+
+                var pos:vector2 = this.battleObj.getHeroPos(heroObj.x, heroObj.y, heroObj.dir, moveSpeed);
+
+                hero.x = pos.x;
+
+                hero.y = pos.y;
+            }
+        }
+    }
 
     public getNetImage(textureObj:any,url:string):void{
         var imgLoader:egret.ImageLoader = new egret.ImageLoader;
@@ -306,92 +312,6 @@ class Main extends egret.DisplayObjectContainer {
            textureObj["texture"] = texture;
         }, this ); 
         imgLoader.load(url);
-    }
-
-
-    private AddTween(heroObj:hero, container:egret.DisplayObject){
-
-        if(heroObj.dir == 0){
-
-            if(Math.abs(heroObj.x - container.x) > 0.01 || Math.abs(heroObj.y - container.y) > 0.01){
-
-                var unit:TweenUnit = new TweenUnit();
-
-                unit.endX = heroObj.x;
-
-                unit.endY = heroObj.y;
-
-                unit.obj = container;
-
-                unit.startX = container.x;
-
-                unit.startY = container.y;
-
-                this.tweenList.push(unit);
-            }
-        }
-        else{
-
-            var unit:TweenUnit = new TweenUnit();
-
-            var speed = this.battleObj.moveSpeed * this.tweenTime * 1000 / this.deltaTime;
-
-            if(heroObj.dir == 1){
-
-                unit.endX = heroObj.x;
-
-                unit.endY = heroObj.y - speed;
-            }
-            else if(heroObj.dir == 2){
-
-                unit.endX = heroObj.x;
-
-                unit.endY = heroObj.y + speed;
-            }
-            else if(heroObj.dir == 3){
-
-                unit.endX = heroObj.x - speed;
-
-                unit.endY = heroObj.y;
-            }
-            else if(heroObj.dir == 4){
-
-                unit.endX = heroObj.x + speed;
-
-                unit.endY = heroObj.y;
-            }
-
-            unit.obj = container;
-
-            unit.startX = container.x;
-
-            unit.startY = container.y;
-
-            this.tweenList.push(unit);
-        }
-    }
-
-    private TweenTo(value:number){
-
-        for(var key in this.tweenList){
-
-            var unit:TweenUnit = this.tweenList[key];
-
-            var x:number = unit.startX + (unit.endX - unit.startX) * value;
-
-            var y:number = unit.startY + (unit.endY - unit.startY) * value;
-
-            unit.obj.x = x;
-
-            unit.obj.y = y;
-        }
-    }
-
-    private TweenEnd(){
-
-        this.tweenID = -1;
-
-        this.tweenList = [];
     }
 
     private getMessage(tag:string, data:string):void

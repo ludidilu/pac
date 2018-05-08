@@ -8,7 +8,7 @@ declare class battle{
 
 	setRefreshData(data:refreshData):void;
 
-	getHeroPos(heroX:number, heroY:number, heroDir:number, moveSpeed:number):vector2;
+	getHeroPos(heroX:number, heroY:number, heroDir:number, moveDistance:number):vector2;
 
 	mapWidth:number;
 
