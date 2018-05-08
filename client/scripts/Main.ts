@@ -34,7 +34,7 @@ class Main extends egret.DisplayObjectContainer {
 
         this.battleObj = fun();
 
-        this.battleObj.init();
+        this.battleObj.init(16,16,50,{},3);
 
         egret.startTick(this.update, this);
 
@@ -394,13 +394,13 @@ class Main extends egret.DisplayObjectContainer {
         this.tweenList = [];
     }
 
-    private getMessage(tag, data):void
+    private getMessage(tag:string, data:string):void
     {
         if(tag == "refresh"){
 
-            var arr: {[key:string]:hero} = JSON.parse(data);
+            var refreshDataObj : refreshData = JSON.parse(data);
 
-            this.battleObj.setRefreshData(arr);
+            this.battleObj.setRefreshData(refreshDataObj);
         }
         else if(tag == "update"){
 
