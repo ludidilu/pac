@@ -334,7 +334,7 @@ class Main extends egret.DisplayObjectContainer {
 
             var unit:TweenUnit = new TweenUnit();
 
-            var speed = this.battleObj.speed * this.tweenTime * 1000 / this.deltaTime;
+            var speed = this.battleObj.moveSpeed * this.tweenTime * 1000 / this.deltaTime;
 
             if(heroObj.dir == 1){
 
