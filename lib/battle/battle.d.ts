@@ -2,7 +2,7 @@ declare class battle{
 
 	heroArr:{[key:string]:hero};
 	
-	init(deltaTime:number):void;
+	init():void;
 
 	clientUpdate(data:roundData):void;
 

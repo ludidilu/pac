@@ -14,7 +14,7 @@ setInterval(update, deltaTime);
 
 var battle = fun();
 
-battle.init(deltaTime * 0.001);
+battle.init();
 
 var player = [];
 

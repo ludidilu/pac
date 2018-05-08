@@ -34,7 +34,7 @@ class Main extends egret.DisplayObjectContainer {
 
         this.battleObj = fun();
 
-        this.battleObj.init(this.deltaTime * 0.001);
+        this.battleObj.init();
 
         egret.startTick(this.update, this);
 
@@ -334,27 +334,29 @@ class Main extends egret.DisplayObjectContainer {
 
             var unit:TweenUnit = new TweenUnit();
 
+            var speed = this.battleObj.speed * this.tweenTime * 1000 / this.deltaTime;
+
             if(heroObj.dir == 1){
 
                 unit.endX = heroObj.x;
 
-                unit.endY = heroObj.y - this.battleObj.speed * this.tweenTime;
+                unit.endY = heroObj.y - speed;
             }
             else if(heroObj.dir == 2){
 
                 unit.endX = heroObj.x;
 
-                unit.endY = heroObj.y + this.battleObj.speed * this.tweenTime;
+                unit.endY = heroObj.y + speed;
             }
             else if(heroObj.dir == 3){
 
-                unit.endX = heroObj.x - this.battleObj.speed * this.tweenTime;
+                unit.endX = heroObj.x - speed;
 
                 unit.endY = heroObj.y;
             }
             else if(heroObj.dir == 4){
 
-                unit.endX = heroObj.x + this.battleObj.speed * this.tweenTime;
+                unit.endX = heroObj.x + speed;
 
                 unit.endY = heroObj.y;
             }
