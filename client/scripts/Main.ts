@@ -216,11 +216,11 @@ class Main extends egret.DisplayObjectContainer {
 
     private updatePing(){
 
-        if(Timer.getUnscaledTime() - this.lastPingTime > this.pingGap){
+        if(Timer.getRealTime() - this.lastPingTime > this.pingGap){
 
-            this.socket.emit("getLag", Timer.getUnscaledTime());
+            this.socket.emit("getLag", Timer.getRealTime());
 
-            this.lastPingTime = Timer.getUnscaledTime();
+            this.lastPingTime = Timer.getRealTime();
         }
     }
 
@@ -284,9 +284,9 @@ class Main extends egret.DisplayObjectContainer {
         }
         else if(tag == "getLag"){
 
-            var time : number  = parseInt(data);            
+            var time : number = parseInt(data);            
 
-            var nowTime = Timer.getUnscaledTime();
+            var nowTime = Timer.getRealTime();
 
             this.pingTf.text = (nowTime - time).toString();
         }

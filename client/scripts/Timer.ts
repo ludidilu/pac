@@ -8,6 +8,8 @@ class Timer
 
     private static lastTime:number;
 
+    private static startTime = new Date().getTime();
+
     static update(nowTime:number){
 
         Timer.lastTime = Timer.nowTime;
@@ -33,6 +35,11 @@ class Timer
     static getUnscaledDeltaTime(){
 
         return Timer.nowTime - Timer.lastTime;
+    }
+
+    static getRealTime(){
+
+        return new Date().getTime() - Timer.startTime;
     }
 
     static setTimeScale(scale:number){
