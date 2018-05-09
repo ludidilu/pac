@@ -16,6 +16,10 @@ class Main extends egret.DisplayObjectContainer {
 
     private tagArr:Array<string> = ["refresh", "update", "getLag"];
 
+    private battleContainer:egret.DisplayObjectContainer;
+
+    private uiContainer:egret.DisplayObjectContainer;
+
     private heroArr:{[key:string]:egret.DisplayObjectContainer} = {};
 
     private btArr:Array<egret.Sprite> = [];
@@ -82,13 +86,21 @@ class Main extends egret.DisplayObjectContainer {
 
     private initUi():void
     {
+        this.battleContainer = new egret.DisplayObjectContainer();
+
+        this.addChild(this.battleContainer);
+
+        this.uiContainer = new egret.DisplayObjectContainer();
+
+        this.addChild(this.uiContainer);
+
         console.log("egret.Capabilities.renderMode:" + egret.Capabilities.renderMode);
 
         var sprite:egret.Sprite = new egret.Sprite();
         sprite.graphics.beginFill(0x000000);
         sprite.graphics.drawRect(0, 0, this.stage.stageWidth, this.stage.stageHeight);
         sprite.graphics.endFill();
-        this.addChild(sprite);
+        this.battleContainer.addChild(sprite);
 
         sprite.touchEnabled = true;
 
@@ -125,7 +137,7 @@ class Main extends egret.DisplayObjectContainer {
         sprite.graphics.endFill();
         sprite.x = 50;
         sprite.y = this.stage.stageHeight - 50 * 3;
-        this.addChild(sprite);
+        this.uiContainer.addChild(sprite);
 
         this.btArr.push(sprite);
 
@@ -135,7 +147,7 @@ class Main extends egret.DisplayObjectContainer {
         sprite.graphics.endFill();
         sprite.x = 50;
         sprite.y = this.stage.stageHeight - 50;
-        this.addChild(sprite);
+        this.uiContainer.addChild(sprite);
 
         this.btArr.push(sprite);
 
@@ -146,7 +158,7 @@ class Main extends egret.DisplayObjectContainer {
         sprite.graphics.endFill();
         sprite.x = 0;
         sprite.y = this.stage.stageHeight - 50 * 2;
-        this.addChild(sprite);
+        this.uiContainer.addChild(sprite);
 
         this.btArr.push(sprite);
 
@@ -157,14 +169,14 @@ class Main extends egret.DisplayObjectContainer {
         sprite.graphics.endFill();
         sprite.x = 100;
         sprite.y = this.stage.stageHeight - 50 * 2;
-        this.addChild(sprite);
+        this.uiContainer.addChild(sprite);
 
         this.btArr.push(sprite);
 
 
 
         this.pingTf = new egret.TextField();
-        this.addChild(this.pingTf);
+        this.uiContainer.addChild(this.pingTf);
     }
 
     private touchBegin(index):void
@@ -266,7 +278,7 @@ class Main extends egret.DisplayObjectContainer {
 
                 container.y = heroObj.y;
 
-                this.addChild(container);
+                this.battleContainer.addChild(container);
 
                 this.heroArr[id] = container;
             }
