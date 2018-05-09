@@ -12,9 +12,39 @@ class BattleClient extends egret.DisplayObjectContainer {
 
     private lastGetServerDataTime:number = 0;
 
+    private bgContainer:egret.DisplayObjectContainer;
+
+    private mapConainer:egret.DisplayObjectContainer;
+
+    private heroContainer:egret.DisplayObjectContainer;
+
     public init(battleObj:battle){
 
         this.battleObj = battleObj;
+
+        this.initContainer();
+
+        this.initBg();
+
+        this.initMap();
+    }
+
+    private initContainer(){
+
+        this.bgContainer = new egret.DisplayObjectContainer();
+
+        this.addChild(this.bgContainer);
+
+        this.mapConainer = new egret.DisplayObjectContainer();
+
+        this.addChild(this.mapConainer);
+
+        this.heroContainer = new egret.DisplayObjectContainer();
+
+        this.addChild(this.heroContainer);
+    }
+
+    private initBg(){
 
         var tmpWidth = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
 
@@ -32,7 +62,35 @@ class BattleClient extends egret.DisplayObjectContainer {
 
         this.scaleY = this.scaleX;
 
-        this.addChild(sprite);
+        this.bgContainer.addChild(sprite);
+    }
+
+    private initMap(){
+
+        var key;
+
+        for(key in this.battleObj.obstacle){
+
+            var n:number = key;
+
+            var x = n % this.battleObj.mapWidth;
+
+            var y = Math.floor(n / this.battleObj.mapWidth);
+
+            var sprite:egret.Sprite = new egret.Sprite();
+
+            sprite.graphics.beginFill(0xff0000);
+
+            sprite.graphics.drawRect(0, 0, this.battleObj.mapUnitWidth, this.battleObj.mapUnitWidth);
+
+            sprite.graphics.endFill();
+
+            sprite.x = x * this.battleObj.mapUnitWidth;
+
+            sprite.y = y * this.battleObj.mapUnitWidth;
+
+            this.mapConainer.addChild(sprite);
+        }
     }
 
     public gameUpdate(){
@@ -83,7 +141,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
                 container.y = heroObj.y;
 
-                this.addChild(container);
+                this.heroContainer.addChild(container);
 
                 this.heroArr[id] = container;
             }
@@ -118,8 +176,6 @@ class BattleClient extends egret.DisplayObjectContainer {
     }
 
     public updateHero(){
-
-        console.log("fuck:" + this.battleObj);
 
         for(var key in this.battleObj.heroArr){
 

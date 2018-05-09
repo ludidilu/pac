@@ -8,9 +8,11 @@ class Main extends egret.DisplayObjectContainer {
 
     private bgContainer:egret.DisplayObjectContainer;
 
-    private battleContainer:BattleClient;
+    private battleContainer:egret.DisplayObjectContainer;
 
     private uiContainer:egret.DisplayObjectContainer;
+
+    private battleClient:BattleClient;
 
     private btArr:Array<egret.Sprite> = [];
 
@@ -230,19 +232,23 @@ class Main extends egret.DisplayObjectContainer {
 
         this.battleObj.setRefreshData(refreshDataObj);
 
-        this.battleContainer.init(this.battleObj);
+        this.battleClient = new BattleClient();
+
+        this.battleContainer.addChild(this.battleClient);
+
+        this.battleClient.init(this.battleObj);
     }
 
     private gameUpdate():void
     {
-        this.battleContainer.gameUpdate();
+        this.battleClient.gameUpdate();
     }
 
     private updateHero():void{
 
         if(this.battleObj){
 
-            this.battleContainer.updateHero();
+            this.battleClient.updateHero();
         }
     }
 
