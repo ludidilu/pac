@@ -1,44 +1,26 @@
-class TweenUnit{
-    public obj:egret.DisplayObject;
-    public startX:number;
-    public endX:number;
-    public startY:number;
-    public endY:number;
-}
-
 class Main extends egret.DisplayObjectContainer {
 
     private socket:SocketIOClient.Socket;
 
-    private battleObj:battle;
-
-    private deltaTime:number = 20;
-
     private tagArr:Array<string> = ["refresh", "update", "getLag"];
 
-    private battleContainer:egret.DisplayObjectContainer;
+    private battleObj:battle;
+
+    private bgContainer:egret.DisplayObjectContainer;
+
+    private battleContainer:BattleClient;
 
     private uiContainer:egret.DisplayObjectContainer;
 
-    private heroArr:{[key:string]:egret.DisplayObjectContainer} = {};
-
     private btArr:Array<egret.Sprite> = [];
 
-    private lastGetServerDataTime:number = 0;
-
     private pingTf:egret.TextField;
-
-    private tweenTime:number = 500;
 
     public constructor() {
 
         super();
 
         console.log("start");
-
-        this.battleObj = fun();
-
-        this.battleObj.init(16,16,50,{},3);
 
         egret.startTick(this.update, this);
 
@@ -86,7 +68,11 @@ class Main extends egret.DisplayObjectContainer {
 
     private initUi():void
     {
-        this.battleContainer = new egret.DisplayObjectContainer();
+        this.bgContainer = new egret.DisplayObjectContainer();
+
+        this.addChild(this.bgContainer);
+
+        this.battleContainer = new BattleClient();
 
         this.addChild(this.battleContainer);
 
@@ -100,7 +86,7 @@ class Main extends egret.DisplayObjectContainer {
         sprite.graphics.beginFill(0x000000);
         sprite.graphics.drawRect(0, 0, this.stage.stageWidth, this.stage.stageHeight);
         sprite.graphics.endFill();
-        this.battleContainer.addChild(sprite);
+        this.bgContainer.addChild(sprite);
 
         sprite.touchEnabled = true;
 
@@ -130,6 +116,7 @@ class Main extends egret.DisplayObjectContainer {
         sprite.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEnd, this);
 
         sprite.addEventListener(egret.TouchEvent.TOUCH_RELEASE_OUTSIDE, this.touchEnd, this);
+
 
         sprite = new egret.Sprite();
         sprite.graphics.beginFill(0xffffff);
@@ -235,188 +222,28 @@ class Main extends egret.DisplayObjectContainer {
         }
     }
 
+    private refreshData(refreshDataObj:refreshData):void{
+
+        this.battleObj = fun();
+
+        this.battleObj.init(refreshDataObj.mapWidth, refreshDataObj.mapHeight, refreshDataObj.mapScale, refreshDataObj.obstacle, refreshDataObj.moveSpeed);
+
+        this.battleObj.setRefreshData(refreshDataObj);
+
+        this.battleContainer.init(this.battleObj);
+    }
+
     private gameUpdate():void
     {
-        this.lastGetServerDataTime = Timer.getUnscaledTime();
-
-        for(var id in this.battleObj.heroArr){
-
-            var heroObj:hero = this.battleObj.heroArr[id];
-
-            if(!this.heroArr[id]){
-
-                var container:egret.DisplayObjectContainer = new egret.DisplayObjectContainer();
-
-                var dele = function(){
-
-                    var c = container;
-
-                    var getImg = function(event:egret.Event){
-
-                        var loader:egret.ImageLoader = event.currentTarget;  
-
-                        var tex:egret.Texture = new egret.Texture();
-
-                        tex.bitmapData = loader.data;
-
-                        var bitmap:egret.Bitmap = new egret.Bitmap(tex);
-
-                        bitmap.x = -0.5 * bitmap.width;
-                        bitmap.y = -0.5 * bitmap.height;
-
-                        c.addChild(bitmap);
-                    }
-
-                    var imgLoader:egret.ImageLoader = new egret.ImageLoader;
-                    imgLoader.once( egret.Event.COMPLETE, getImg, this ); 
-                    imgLoader.load( "resource/assets/red_point.png" );
-                }
-                
-                dele.bind(this)();
-
-                container.x = heroObj.x;
-
-                container.y = heroObj.y;
-
-                this.battleContainer.addChild(container);
-
-                this.heroArr[id] = container;
-            }
-        }
-
-        var del:Array<string> = null;
-
-        for(var id in this.heroArr){
-
-            container = this.heroArr[id];
-
-            if(!this.battleObj.heroArr[id]){
-
-                this.removeChild(container);
-
-                if(!del){
-
-                    del = new Array<string>();
-                }
-
-                del.push(id);
-            }
-        }
-
-        if(del){
-
-            for(var id in del){
-
-                delete this.heroArr[id];
-            }
-        }
+        this.battleContainer.gameUpdate();
     }
 
     private updateHero():void{
 
-        for(var key in this.battleObj.heroArr){
+        if(this.battleObj){
 
-            var hero = this.heroArr[key];
-
-            var heroObj = this.battleObj.heroArr[key];
-
-            var percent = (Timer.getUnscaledTime() - this.lastGetServerDataTime) / this.tweenTime;
-
-            if(heroObj.dir == 0){
-
-                hero.x = hero.x + (heroObj.x - hero.x) * percent;
-
-                hero.y = hero.y + (heroObj.y - hero.y) * percent;
-
-            }else{
-
-                var serverMoveDistance = this.battleObj.moveSpeed * (Timer.getUnscaledTime() - this.lastGetServerDataTime) / this.deltaTime;
-
-                var serverPos:Array<vector2> = this.battleObj.getHeroPos(heroObj.x, heroObj.y, heroObj.dir, serverMoveDistance);
-
-                var clientMoveDistance = this.battleObj.moveSpeed * Timer.getUnscaledDeltaTime() / this.deltaTime;
-
-                var clientPos:Array<vector2> = this.battleObj.getHeroPos(hero.x, hero.y, heroObj.dir, clientMoveDistance);
-
-                var fixPos:vector2 = this.getPos(clientPos[clientPos.length - 1].x, clientPos[clientPos.length - 1].y, serverPos[serverPos.length - 1].x, serverPos[serverPos.length - 1].y, heroObj.dir, percent);
-
-                hero.x = fixPos.x;
-
-                hero.y = fixPos.y;
-            }
+            this.battleContainer.updateHero();
         }
-    }
-
-    private getPos(nowX:number, nowY:number, serverX:number, serverY:number, dir:number, percent:number){
-
-        // var pos:Array<vector2> = this.battleObj.getHeroPos(nowX, nowY, dir, moveDistance);
-
-        // var pos2:Array<vector2> = this.battleObj.getHeroPos(serverX, serverY, dir, moveDistance);
-
-        var result:vector2 = this.battleObj.getVector2();
-
-        var xGap = Math.abs(nowX - serverX);
-
-        var yGap = Math.abs(nowY - serverY);
-
-        var dis = xGap + yGap;
-
-        var fixDis = dis * percent;
-
-        if(dir == 1 || dir == 2){
-
-            if(xGap == 0){
-
-                result.x = nowX;
-
-                result.y = nowY + (serverY - nowY) * percent;
-            }
-            else{
-
-                if(fixDis > xGap){
-
-                    result.x = serverX;
-
-                    var tmp = fixDis - xGap;
-
-                    result.y = nowY + (serverY > nowY ? tmp : -tmp);
-                }
-                else{
-
-                    result.x = nowX + (serverX > nowX ? fixDis : -fixDis);
-
-                    result.y = nowY;
-                }
-            }
-        }
-        else{
-
-            if(yGap == 0){
-
-                result.x = nowX + (serverX - nowX) * percent;
-
-                result.y = nowY;
-            }
-            else{
-
-                if(fixDis > yGap){
-
-                    result.y = serverY;
-
-                    var tmp = fixDis - yGap;
-
-                    result.x = nowX + (serverX > nowX ? tmp : -tmp);
-                }
-                else{
-
-                    result.x = nowX;
-
-                    result.y = nowY + (serverY > nowY ? fixDis : -fixDis);
-                }
-            }
-        }
-
-        return result;
     }
 
     public getNetImage(textureObj:any,url:string):void{
@@ -437,7 +264,7 @@ class Main extends egret.DisplayObjectContainer {
 
             var refreshDataObj : refreshData = JSON.parse(data);
 
-            this.battleObj.setRefreshData(refreshDataObj);
+            this.refreshData(refreshDataObj);
 
             this.gameUpdate();
         }
