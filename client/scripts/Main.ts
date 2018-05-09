@@ -14,13 +14,17 @@ class Main extends egret.DisplayObjectContainer {
 
     private deltaTime:number = 20;
 
-    private tagArr:Array<string> = ["refresh", "update"];
+    private tagArr:Array<string> = ["refresh", "update", "getLag"];
 
     private heroArr:{[key:string]:egret.DisplayObjectContainer} = {};
 
     private btArr:Array<egret.Sprite> = [];
 
     private lastGetServerDataTime:number = 0;
+
+    private pingTf:egret.TextField;
+
+    private tweenTime:number = 500;
 
     public constructor() {
 
@@ -156,6 +160,11 @@ class Main extends egret.DisplayObjectContainer {
         this.addChild(sprite);
 
         this.btArr.push(sprite);
+
+
+
+        this.pingTf = new egret.TextField();
+        this.addChild(this.pingTf);
     }
 
     private touchBegin(index):void
@@ -195,7 +204,23 @@ class Main extends egret.DisplayObjectContainer {
 
         this.updateHero();
 
+        this.updatePing();
+
         return true;
+    }
+
+    private lastPingTime:number = 0;
+
+    private pingGap:number = 1000;
+
+    private updatePing(){
+
+        if(Timer.getUnscaledTime() - this.lastPingTime > this.pingGap){
+
+            this.socket.emit("getLag", Timer.getUnscaledTime());
+
+            this.lastPingTime = Timer.getUnscaledTime();
+        }
     }
 
     private gameUpdate():void
@@ -283,23 +308,103 @@ class Main extends egret.DisplayObjectContainer {
 
             var heroObj = this.battleObj.heroArr[key];
 
+            var percent = (Timer.getUnscaledTime() - this.lastGetServerDataTime) / this.tweenTime;
+
             if(heroObj.dir == 0){
 
-                hero.x = heroObj.x;
+                hero.x = hero.x + (heroObj.x - hero.x) * percent;
 
-                hero.y = heroObj.y;
+                hero.y = hero.y + (heroObj.y - hero.y) * percent;
 
             }else{
 
-                var moveSpeed = this.battleObj.moveSpeed * (Timer.getUnscaledTime() - this.lastGetServerDataTime) / this.deltaTime;
+                var serverMoveDistance = this.battleObj.moveSpeed * (Timer.getUnscaledTime() - this.lastGetServerDataTime) / this.deltaTime;
 
-                var pos:vector2 = this.battleObj.getHeroPos(heroObj.x, heroObj.y, heroObj.dir, moveSpeed);
+                var serverPos:Array<vector2> = this.battleObj.getHeroPos(heroObj.x, heroObj.y, heroObj.dir, serverMoveDistance);
 
-                hero.x = pos.x;
+                var clientMoveDistance = this.battleObj.moveSpeed * Timer.getUnscaledDeltaTime() / this.deltaTime;
 
-                hero.y = pos.y;
+                var clientPos:Array<vector2> = this.battleObj.getHeroPos(hero.x, hero.y, heroObj.dir, clientMoveDistance);
+
+                var fixPos:vector2 = this.getPos(clientPos[clientPos.length - 1].x, clientPos[clientPos.length - 1].y, serverPos[serverPos.length - 1].x, serverPos[serverPos.length - 1].y, heroObj.dir, percent);
+
+                hero.x = fixPos.x;
+
+                hero.y = fixPos.y;
             }
         }
+    }
+
+    private getPos(nowX:number, nowY:number, serverX:number, serverY:number, dir:number, percent:number){
+
+        // var pos:Array<vector2> = this.battleObj.getHeroPos(nowX, nowY, dir, moveDistance);
+
+        // var pos2:Array<vector2> = this.battleObj.getHeroPos(serverX, serverY, dir, moveDistance);
+
+        var result:vector2 = this.battleObj.getVector2();
+
+        var xGap = Math.abs(nowX - serverX);
+
+        var yGap = Math.abs(nowY - serverY);
+
+        var dis = xGap + yGap;
+
+        var fixDis = dis * percent;
+
+        if(dir == 1 || dir == 2){
+
+            if(xGap == 0){
+
+                result.x = nowX;
+
+                result.y = nowY + (serverY - nowY) * percent;
+            }
+            else{
+
+                if(fixDis > xGap){
+
+                    result.x = serverX;
+
+                    var tmp = fixDis - xGap;
+
+                    result.y = nowY + (serverY > nowY ? tmp : -tmp);
+                }
+                else{
+
+                    result.x = nowX + (serverX > nowX ? fixDis : -fixDis);
+
+                    result.y = nowY;
+                }
+            }
+        }
+        else{
+
+            if(yGap == 0){
+
+                result.x = nowX + (serverX - nowX) * percent;
+
+                result.y = nowY;
+            }
+            else{
+
+                if(fixDis > yGap){
+
+                    result.y = serverY;
+
+                    var tmp = fixDis - yGap;
+
+                    result.x = nowX + (serverX > nowX ? tmp : -tmp);
+                }
+                else{
+
+                    result.x = nowX;
+
+                    result.y = nowY + (serverY > nowY ? fixDis : -fixDis);
+                }
+            }
+        }
+
+        return result;
     }
 
     public getNetImage(textureObj:any,url:string):void{
@@ -321,6 +426,8 @@ class Main extends egret.DisplayObjectContainer {
             var refreshDataObj : refreshData = JSON.parse(data);
 
             this.battleObj.setRefreshData(refreshDataObj);
+
+            this.gameUpdate();
         }
         else if(tag == "update"){
 
@@ -329,6 +436,14 @@ class Main extends egret.DisplayObjectContainer {
             this.battleObj.clientUpdate(roundData);
 
             this.gameUpdate();
+        }
+        else if(tag == "getLag"){
+
+            var time : number  = parseInt(data);            
+
+            var nowTime = Timer.getUnscaledTime();
+
+            this.pingTf.text = (nowTime - time).toString();
         }
     }
 

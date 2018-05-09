@@ -4,7 +4,7 @@ io.on('connection', connection);
 
 io.listen(1999);
 
-var messageTag = ["join","command","refresh"];
+var messageTag = ["join","command","refresh","getLag"];
 
 var fun = require("../lib/battle/battle");
 
@@ -18,13 +18,23 @@ battle.init(16,16,50,{},3);
 
 var player = [];
 
+var startTime = new Date().getTime();
+
+var lagTest = true;
+
+var lagMin = 100;
+
+var lagMax = 200;
+
+var lagList = [];
+
 function update(){
 
 	var result = JSON.stringify(battle.serverUpdate());
 
 	for(var playerID in player){
 
-		player[playerID].emit("update", result);
+		sendData(player[playerID], "update", result);
 	}
 }
 
@@ -53,6 +63,25 @@ function connection(client){
 
 function getData(client, tag, data){
 
+	if(!lagTest){
+
+		getDataReal(client, tag, data);
+	}
+	else{
+
+		var runTime = new Date().getTime() + lagMin + Math.random() * (lagMax - lagMin);
+
+		var dele = function(){
+
+			getDataReal(client, tag, data);
+		}
+
+		addLagTest(dele, runTime);
+	}
+}
+
+function getDataReal(client, tag, data){
+
 	if(tag == "join"){
 
 		if(!client.playerID){
@@ -65,7 +94,7 @@ function getData(client, tag, data){
 
 			var result = battle.join(id);
 
-			client.emit("refresh", JSON.stringify(result));
+			sendData(client, "refresh", JSON.stringify(result));
 		}
 	}
 	else if(tag == "command"){
@@ -79,6 +108,68 @@ function getData(client, tag, data){
 
 		var result = battle.getRefreshData();
 
-		client.emit("refresh", JSON.stringify(result));
+		sendData(client, "refresh", JSON.stringify(result));
+	}
+	else if(tag == "getLag"){
+
+		sendData(client, "getLag", data);
+	}
+}
+
+function sendData(client, tag, data){
+
+	if(!lagTest){
+
+		client.emit(tag, data);
+	}
+	else{
+		
+		var runTime = new Date().getTime() + lagMin + Math.random() * (lagMax - lagMin);
+
+		var dele = function(){
+
+			client.emit(tag, data);
+		}
+
+		addLagTest(dele, runTime);
+	}
+}
+
+function addLagTest(dele, runTime){
+
+	lagList.push({dele:dele, runTime:runTime});
+
+	if(lagList.length == 1){
+
+		setTimeout(lagRun, runTime - (new Date().getTime()));
+	}
+}
+
+function lagRun(){
+
+	var nowTime = new Date().getTime();
+
+	var obj = lagList.shift();
+
+	obj.dele();
+
+	while(lagList.length > 0){
+
+		obj = lagList[0];
+
+		var gap = obj.runTime - nowTime;
+
+		if(gap <= 0){
+
+			lagList.shift();
+
+			obj.dele();
+		}
+		else{
+
+			setTimeout(lagRun, gap);
+
+			return;
+		}
 	}
 }

@@ -8,7 +8,7 @@ declare class battle{
 
 	setRefreshData(data:refreshData):void;
 
-	getHeroPos(heroX:number, heroY:number, heroDir:number, moveDistance:number):vector2;
+	getHeroPos(heroX:number, heroY:number, heroDir:number, moveDistance:number):Array<vector2>;
 
 	mapWidth:number;
 
@@ -21,6 +21,8 @@ declare class battle{
 	obstacle:{[key:number]:number};
 
 	moveSpeed:number;
+
+	getVector2():vector2;
 }
 
 declare class vector2{

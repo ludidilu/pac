@@ -2,24 +2,43 @@ class Timer
 {
     private static scale:number = 1;
 
-    private static lastTime:number = 0;
+    private static lastSetScaleTime:number = 0;
 
     private static nowTime:number;
 
+    private static lastTime:number;
+
     static update(nowTime:number){
+
+        Timer.lastTime = Timer.nowTime;
+
         Timer.nowTime = nowTime;
     }
 
     static getUnscaledTime() {
+
         return Timer.nowTime;
     }
 
     static getTime(){
-        return Timer.lastTime + (Timer.nowTime - Timer.lastTime) * Timer.scale;
+
+        return Timer.lastSetScaleTime + (Timer.nowTime - Timer.lastSetScaleTime) * Timer.scale;
+    }
+
+    static getDeltaTime(){
+        
+        return (Timer.nowTime - Timer.lastTime) * Timer.scale;
+    }
+
+    static getUnscaledDeltaTime(){
+
+        return Timer.nowTime - Timer.lastTime;
     }
 
     static setTimeScale(scale:number){
-        Timer.lastTime = Timer.lastTime + (Timer.nowTime - Timer.lastTime) * Timer.scale;
+        
+        Timer.lastSetScaleTime = Timer.lastSetScaleTime + (Timer.nowTime - Timer.lastSetScaleTime) * Timer.scale;
+
         Timer.scale = scale;
     }
 }
