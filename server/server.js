@@ -14,13 +14,13 @@ setInterval(update, deltaTime);
 
 var battle = fun();
 
-battle.init(16,16,50,{16:1,18:1},3);
+battle.init(16,16,50,{h:{1:1},v:{3:1}},3);
 
 var player = [];
 
 var startTime = new Date().getTime();
 
-var lagTest = false;
+var lagTest = true;
 
 var lagMin = 100;
 

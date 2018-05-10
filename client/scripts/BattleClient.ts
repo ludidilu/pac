@@ -10,6 +10,8 @@ class BattleClient extends egret.DisplayObjectContainer {
 
     private deltaTime:number = 20;
 
+    private obstacleWidth:number = 10;
+
     private lastGetServerDataTime:number = 0;
 
     private bgContainer:egret.DisplayObjectContainer;
@@ -69,27 +71,56 @@ class BattleClient extends egret.DisplayObjectContainer {
 
         var key;
 
-        for(key in this.battleObj.obstacle){
+        if(this.battleObj.obstacle.v){
 
-            var n:number = key;
+            for(key in this.battleObj.obstacle.v){
 
-            var x = n % this.battleObj.mapWidth;
+                var n:number = key;
 
-            var y = Math.floor(n / this.battleObj.mapWidth);
+                var x = n % this.battleObj.mapWidth;
 
-            var sprite:egret.Sprite = new egret.Sprite();
+                var y = Math.floor(n / this.battleObj.mapWidth);
 
-            sprite.graphics.beginFill(0xff0000);
+                var sprite:egret.Sprite = new egret.Sprite();
 
-            sprite.graphics.drawRect(0, 0, this.battleObj.mapUnitWidth, this.battleObj.mapUnitWidth);
+                sprite.graphics.beginFill(0xff0000);
 
-            sprite.graphics.endFill();
+                sprite.graphics.drawRect(0, 0, this.battleObj.mapUnitWidth, this.obstacleWidth);
 
-            sprite.x = x * this.battleObj.mapUnitWidth;
+                sprite.graphics.endFill();
 
-            sprite.y = y * this.battleObj.mapUnitWidth;
+                sprite.x = x * this.battleObj.mapUnitWidth;
 
-            this.mapConainer.addChild(sprite);
+                sprite.y = (y + 1) * this.battleObj.mapUnitWidth - this.obstacleWidth * 0.5;
+
+                this.mapConainer.addChild(sprite);
+            }
+        }
+
+        if(this.battleObj.obstacle.h){
+
+            for(key in this.battleObj.obstacle.h){
+
+                n = key;
+
+                x = n % this.battleObj.mapWidth;
+
+                y = Math.floor(n / this.battleObj.mapWidth);
+
+                sprite = new egret.Sprite();
+
+                sprite.graphics.beginFill(0xff0000);
+
+                sprite.graphics.drawRect(0, 0, this.obstacleWidth, this.battleObj.mapUnitWidth);
+
+                sprite.graphics.endFill();
+
+                sprite.x = (x + 1) * this.battleObj.mapUnitWidth - this.obstacleWidth * 0.5;
+
+                sprite.y = y * this.battleObj.mapUnitWidth;
+
+                this.mapConainer.addChild(sprite);
+            }
         }
     }
 
