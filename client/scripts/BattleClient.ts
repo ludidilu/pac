@@ -50,18 +50,6 @@ class BattleClient extends egret.DisplayObjectContainer {
 
         var tmpWidth = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
 
-        var tmpHeight = this.battleObj.mapHeight * this.battleObj.mapUnitWidth;
-
-        var sprite:egret.Sprite = new egret.Sprite();
-
-        sprite.graphics.beginFill(0x505050);
-
-        sprite.graphics.drawRect(0, 0, this.mapWidth, this.mapWidth * this.battleObj.mapHeight / this.battleObj.mapWidth);
-
-        sprite.graphics.endFill();
-
-        container.addChild(sprite);
-
         container.scaleX = container.scaleY = tmpWidth / this.mapWidth;
 
         this.scaleX = this.mapWidth / tmpWidth;
@@ -69,6 +57,39 @@ class BattleClient extends egret.DisplayObjectContainer {
         this.scaleY = this.scaleX;
 
         this.bgContainer.addChild(container);
+
+        var sprite:egret.Sprite = new egret.Sprite();
+
+        container.addChild(sprite);
+
+        sprite.graphics.beginFill(0x808080);
+
+        sprite.graphics.drawRect(0,0,this.mapWidth, this.mapWidth * this.battleObj.mapHeight / this.battleObj.mapWidth);
+
+        sprite.graphics.endFill();
+
+        var cellWidth = this.mapWidth / this.battleObj.mapWidth;
+
+        sprite = new egret.Sprite();
+
+        container.addChild(sprite);
+
+        sprite.graphics.beginFill(0x505050);
+                
+        for(var i:number = 0 ; i < this.battleObj.mapWidth ; i++){
+
+            for(var m:number = 0 ; m < this.battleObj.mapHeight ; m++){
+
+                if(i % 2 == m % 2){
+
+                    continue;
+                }
+
+                sprite.graphics.drawRect(cellWidth * i, cellWidth * m, cellWidth, cellWidth);
+            }
+        }
+
+        sprite.graphics.endFill();
     }
 
     private initMap(){
