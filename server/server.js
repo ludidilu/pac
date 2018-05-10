@@ -22,11 +22,13 @@ var startTime = new Date().getTime();
 
 var lagTest = true;
 
-var lagMin = 100;
+var lagMin = 0;
 
-var lagMax = 200;
+var lagMax = 32;
 
 var lagList = [];
+
+var isLagRunning = false;
 
 function update(){
 
@@ -139,13 +141,15 @@ function addLagTest(dele, runTime){
 
 	lagList.push({dele:dele, runTime:runTime});
 
-	if(lagList.length == 1){
+	if(!isLagRunning && lagList.length == 1){
 
 		setTimeout(lagRun, runTime - (new Date().getTime()));
 	}
 }
 
 function lagRun(){
+
+	isLagRunning = true;
 
 	var nowTime = new Date().getTime();
 
@@ -169,7 +173,9 @@ function lagRun(){
 
 			setTimeout(lagRun, gap);
 
-			return;
+			break;
 		}
 	}
+
+	isLagRunning = false;
 }
