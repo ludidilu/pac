@@ -8,9 +8,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
     private tweenTime:number = 500;
 
-    private deltaTime:number = 20;
-
-    private obstacleWidth:number = 10;
+    private obstacleWidth:number = 0.1;
 
     private lastGetServerDataTime:number = 0;
 
@@ -48,6 +46,8 @@ class BattleClient extends egret.DisplayObjectContainer {
 
     private initBg(){
 
+        var container:egret.DisplayObjectContainer = new egret.DisplayObjectContainer();
+
         var tmpWidth = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
 
         var tmpHeight = this.battleObj.mapHeight * this.battleObj.mapUnitWidth;
@@ -56,15 +56,19 @@ class BattleClient extends egret.DisplayObjectContainer {
 
         sprite.graphics.beginFill(0x505050);
 
-        sprite.graphics.drawRect(0, 0, tmpWidth, tmpHeight);
+        sprite.graphics.drawRect(0, 0, this.mapWidth, this.mapWidth * this.battleObj.mapHeight / this.battleObj.mapWidth);
 
         sprite.graphics.endFill();
+
+        container.addChild(sprite);
+
+        container.scaleX = container.scaleY = tmpWidth / this.mapWidth;
 
         this.scaleX = this.mapWidth / tmpWidth;
 
         this.scaleY = this.scaleX;
 
-        this.bgContainer.addChild(sprite);
+        this.bgContainer.addChild(container);
     }
 
     private initMap(){
@@ -85,13 +89,13 @@ class BattleClient extends egret.DisplayObjectContainer {
 
                 sprite.graphics.beginFill(0xff0000);
 
-                sprite.graphics.drawRect(0, 0, this.battleObj.mapUnitWidth, this.obstacleWidth);
+                sprite.graphics.drawRect(0, 0, this.battleObj.mapUnitWidth, this.battleObj.mapUnitWidth * this.obstacleWidth);
 
                 sprite.graphics.endFill();
 
                 sprite.x = x * this.battleObj.mapUnitWidth;
 
-                sprite.y = (y + 1) * this.battleObj.mapUnitWidth - this.obstacleWidth * 0.5;
+                sprite.y = (y + 1) * this.battleObj.mapUnitWidth - this.battleObj.mapUnitWidth * this.obstacleWidth * 0.5;
 
                 this.mapConainer.addChild(sprite);
             }
@@ -111,22 +115,24 @@ class BattleClient extends egret.DisplayObjectContainer {
 
                 sprite.graphics.beginFill(0xff0000);
 
-                sprite.graphics.drawRect(0, 0, this.obstacleWidth, this.battleObj.mapUnitWidth);
+                sprite.graphics.drawRect(0, 0, this.battleObj.mapUnitWidth * this.obstacleWidth, this.battleObj.mapUnitWidth);
 
                 sprite.graphics.endFill();
 
-                sprite.x = (x + 1) * this.battleObj.mapUnitWidth - this.obstacleWidth * 0.5;
+                sprite.x = (x + 1) * this.battleObj.mapUnitWidth - this.battleObj.mapUnitWidth * this.obstacleWidth * 0.5;
 
                 sprite.y = y * this.battleObj.mapUnitWidth;
 
                 this.mapConainer.addChild(sprite);
             }
         }
+
+        this.mapConainer.cacheAsBitmap = true;
     }
 
     public gameUpdate(){
 
-        this.lastGetServerDataTime = Timer.getUnscaledTime();
+        this.lastGetServerDataTime = Timer.getTime();
 
         for(var id in this.battleObj.heroArr){
 
@@ -214,9 +220,11 @@ class BattleClient extends egret.DisplayObjectContainer {
 
             var heroObj = this.battleObj.heroArr[key];
 
-            var percent = (Timer.getUnscaledTime() - this.lastGetServerDataTime) / this.tweenTime;
+            var percent:number;
 
             if(heroObj.dir == 0){
+
+                percent = (Timer.getTime() - this.lastGetServerDataTime) / this.tweenTime;
 
                 hero.x = hero.x + (heroObj.x - hero.x) * percent;
 
@@ -224,28 +232,53 @@ class BattleClient extends egret.DisplayObjectContainer {
 
             }else{
 
-                var serverMoveDistance = this.battleObj.moveSpeed * (Timer.getUnscaledTime() - this.lastGetServerDataTime) / this.deltaTime;
+                var serverMoveDistance = this.battleObj.moveSpeed * this.tweenTime;
 
                 var serverPos:Array<vector2> = this.battleObj.getHeroPos(heroObj.x, heroObj.y, heroObj.dir, serverMoveDistance);
 
-                var clientMoveDistance = this.battleObj.moveSpeed * Timer.getUnscaledDeltaTime() / this.deltaTime;
+                var serverFinalPos:vector2 = serverPos[serverPos.length - 1];
 
-                var clientPos:Array<vector2> = this.battleObj.getHeroPos(hero.x, hero.y, heroObj.dir, clientMoveDistance);
+                var distance = Math.abs(heroObj.x - serverFinalPos.x) + Math.abs(heroObj.y - serverFinalPos.y);
 
-                var fixPos:vector2 = this.getPos(clientPos[clientPos.length - 1].x, clientPos[clientPos.length - 1].y, serverPos[serverPos.length - 1].x, serverPos[serverPos.length - 1].y, heroObj.dir, percent);
+                if(distance < serverMoveDistance){
 
-                hero.x = fixPos.x;
+                    //hit wall
+                    var clientMoveDistance = this.battleObj.moveSpeed * Timer.getDeltaTime();
 
-                hero.y = fixPos.y;
+                    var needMoveDistance =  Math.abs(hero.x - serverFinalPos.x) + Math.abs(hero.y - serverFinalPos.y);
+
+                    if(clientMoveDistance > needMoveDistance){
+
+                        hero.x = serverFinalPos.x;
+
+                        hero.y = serverFinalPos.y;
+                    }
+                    else{
+
+                        percent = clientMoveDistance / needMoveDistance;
+
+                        var fixPos:vector2 = this.getPos(hero.x, hero.y, serverFinalPos.x, serverFinalPos.y, heroObj.dir, percent);
+                    
+                        hero.x = fixPos.x;
+
+                        hero.y = fixPos.y;
+                    }
+                }
+                else{
+
+                    percent = Timer.getDeltaTime() / (this.lastGetServerDataTime + this.tweenTime - Timer.getTime());
+
+                    var fixPos:vector2 = this.getPos(hero.x, hero.y, serverFinalPos.x, serverFinalPos.y, heroObj.dir, percent);
+                    
+                    hero.x = fixPos.x;
+
+                    hero.y = fixPos.y;
+                }
             }
         }
     }
 
     private getPos(nowX:number, nowY:number, serverX:number, serverY:number, dir:number, percent:number){
-
-        // var pos:Array<vector2> = this.battleObj.getHeroPos(nowX, nowY, dir, moveDistance);
-
-        // var pos2:Array<vector2> = this.battleObj.getHeroPos(serverX, serverY, dir, moveDistance);
 
         var result:vector2 = this.battleObj.getVector2();
 

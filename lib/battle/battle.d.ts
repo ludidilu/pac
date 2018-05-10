@@ -2,7 +2,7 @@ declare class battle{
 
 	heroArr:{[key:string]:hero};
 	
-	init(mapWidth:number, mapHeight:number, mapScale:number, obstacle:obstacleData, moveSpeed:number):void;
+	init(mapWidth:number, mapHeight:number, mapScale:number, obstacle:obstacleData, moveSpeed:number, deltaTime:number):void;
 
 	clientUpdate(data:roundData):void;
 
@@ -21,6 +21,8 @@ declare class battle{
 	obstacle:obstacleData;
 
 	moveSpeed:number;
+
+	deltaTime:number;
 
 	getVector2():vector2;
 }
@@ -51,6 +53,8 @@ declare class refreshData{
 	obstacle:obstacleData;
 
 	moveSpeed:number;
+
+	deltaTime:number;
 }
 
 declare class roundData{

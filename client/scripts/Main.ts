@@ -228,7 +228,7 @@ class Main extends egret.DisplayObjectContainer {
 
         this.battleObj = fun();
 
-        this.battleObj.init(refreshDataObj.mapWidth, refreshDataObj.mapHeight, refreshDataObj.mapScale, refreshDataObj.obstacle, refreshDataObj.moveSpeed);
+        this.battleObj.init(refreshDataObj.mapWidth, refreshDataObj.mapHeight, refreshDataObj.mapScale, refreshDataObj.obstacle, refreshDataObj.moveSpeed, refreshDataObj.deltaTime);
 
         this.battleObj.setRefreshData(refreshDataObj);
 
