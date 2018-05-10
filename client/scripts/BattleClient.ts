@@ -96,6 +96,8 @@ class BattleClient extends egret.DisplayObjectContainer {
 
         var key;
 
+        var obstacleWidth = this.battleObj.mapUnitWidth * this.obstacleWidth;
+
         if(this.battleObj.obstacle.v){
 
             for(key in this.battleObj.obstacle.v){
@@ -110,13 +112,13 @@ class BattleClient extends egret.DisplayObjectContainer {
 
                 sprite.graphics.beginFill(0xff0000);
 
-                sprite.graphics.drawRect(0, 0, this.battleObj.mapUnitWidth, this.battleObj.mapUnitWidth * this.obstacleWidth);
+                sprite.graphics.drawRect(0, 0, this.battleObj.mapUnitWidth, obstacleWidth);
 
                 sprite.graphics.endFill();
 
                 sprite.x = x * this.battleObj.mapUnitWidth;
 
-                sprite.y = (y + 1) * this.battleObj.mapUnitWidth - this.battleObj.mapUnitWidth * this.obstacleWidth * 0.5;
+                sprite.y = (y + 1) * this.battleObj.mapUnitWidth - obstacleWidth * 0.5;
 
                 this.mapConainer.addChild(sprite);
             }
@@ -136,11 +138,11 @@ class BattleClient extends egret.DisplayObjectContainer {
 
                 sprite.graphics.beginFill(0xff0000);
 
-                sprite.graphics.drawRect(0, 0, this.battleObj.mapUnitWidth * this.obstacleWidth, this.battleObj.mapUnitWidth);
+                sprite.graphics.drawRect(0, 0, obstacleWidth, this.battleObj.mapUnitWidth);
 
                 sprite.graphics.endFill();
 
-                sprite.x = (x + 1) * this.battleObj.mapUnitWidth - this.battleObj.mapUnitWidth * this.obstacleWidth * 0.5;
+                sprite.x = (x + 1) * this.battleObj.mapUnitWidth - obstacleWidth * 0.5;
 
                 sprite.y = y * this.battleObj.mapUnitWidth;
 

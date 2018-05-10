@@ -20,7 +20,7 @@ var player = [];
 
 var startTime = new Date().getTime();
 
-var lagTest = true;
+var lagTest = false;
 
 var lagMin = 0;
 
