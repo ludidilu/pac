@@ -234,6 +234,8 @@ class Main extends egret.DisplayObjectContainer {
 
         this.battleClient = new BattleClient();
 
+        this.battleClient.x = 100;
+
         this.battleContainer.addChild(this.battleClient);
 
         this.battleClient.init(this.battleObj);
