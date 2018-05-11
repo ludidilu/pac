@@ -4,7 +4,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
     private heroArr:{[key:string]:egret.DisplayObjectContainer} = {};
 
-    private mapWidth:number = 500;
+    public mapWidth:number = 500;
 
     private tweenTime:number = 500;
 

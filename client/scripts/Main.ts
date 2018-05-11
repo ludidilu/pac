@@ -154,7 +154,9 @@ class Main extends egret.DisplayObjectContainer {
 
         this.battleClient = new BattleClient();
 
-        this.battleClient.x = 100;
+        this.battleClient.x = (this.stage.stageWidth - this.battleClient.mapWidth) * 0.5;
+
+        this.battleClient.y = (this.stage.stageHeight - this.battleClient.mapWidth * this.battleObj.mapHeight / this.battleObj.mapWidth) * 0.5;
 
         this.battleContainer.addChild(this.battleClient);
 
