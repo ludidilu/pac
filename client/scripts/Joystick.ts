@@ -20,6 +20,8 @@ class Joystick extends egret.DisplayObjectContainer{
 
     private joystickCircle:egret.Sprite;
 
+    private arrowList:Array<egret.Sprite> = new Array<egret.Sprite>(4);
+
     private hasMove:boolean = false;
 
     private hasDown:boolean = false;
@@ -54,6 +56,52 @@ class Joystick extends egret.DisplayObjectContainer{
         this.joystickBg.graphics.drawCircle(0, 0, this.joystickBgRadius);
 
         this.joystickBg.graphics.endFill();
+
+        for(var i:number = 0 ; i < 4 ; i++){
+
+            var mask:egret.Sprite = new egret.Sprite();
+
+            mask.graphics.beginFill(0xffffff);
+
+            mask.graphics.drawCircle(0, 0, this.joystickBgRadius);
+
+            mask.graphics.endFill();
+
+            this.joystickBg.addChild(mask);
+
+            var sprite:egret.Sprite = new egret.Sprite();
+
+            sprite.graphics.beginFill(0xffff00);
+
+            sprite.graphics.drawRect(0, 0, this.joystickBgRadius, this.joystickBgRadius);
+
+            sprite.graphics.endFill();
+
+            if(i == 0){
+
+                sprite.rotation = -135;
+            }
+            else if(i == 1){
+
+                sprite.rotation = 45;
+            }
+            else if(i == 2){
+
+                sprite.rotation = 135;
+            }
+            else{
+
+                sprite.rotation = -45;
+            }
+
+            sprite.mask = mask;
+
+            this.arrowList[i] = sprite;
+
+            this.joystickBg.addChild(sprite);
+
+            sprite.visible = false;
+        }
 
         this.joystickCircle = new egret.Sprite();
 
@@ -119,21 +167,37 @@ class Joystick extends egret.DisplayObjectContainer{
         
         var angle:number = Math.atan2(touch.stageY - this.downY, touch.stageX - this.downX);
 
+        var dir:number;
+
         if(angle < -Math.PI * 0.25 && angle >= -Math.PI * 0.75){
 
-            this.callback(1);
+            dir = 1;
         }
         else if(angle < Math.PI * 0.75 && angle >= Math.PI * 0.25){
 
-            this.callback(2);
+            dir = 2;
         }
         else if(angle < -Math.PI * 0.75 ||angle >= Math.PI * 0.75){
 
-            this.callback(3);
+            dir = 3;
         }
         else{
             
-            this.callback(4);
+            dir = 4;
+        }
+
+        this.callback(dir);
+
+        for(var i:number = 0 ; i < 4 ; i++){
+
+            if(i == dir - 1){
+
+                this.arrowList[i].visible = true;
+            }
+            else{
+
+                this.arrowList[i].visible = false;
+            }
         }
 
         if(this.joystickBgCanMove && distance > this.joystickBgRadius - this.joystickCircleRadius){
@@ -166,6 +230,11 @@ class Joystick extends egret.DisplayObjectContainer{
             this.hasMove = false;
 
             this.joystickBg.visible = false;
+
+            for(var i:number = 0 ; i < 4 ; i++){
+
+                this.arrowList[i].visible = false;
+            }
         }
         else{
 
