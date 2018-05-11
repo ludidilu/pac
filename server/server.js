@@ -1,3 +1,9 @@
+var fs = require("fs");
+
+var obstacleStr = fs.readFileSync(__dirname + '/../data/aaa.dat', "utf8");
+
+var obstacle = JSON.parse(obstacleStr);
+
 let io = require('socket.io')();
 
 io.on('connection', connection);
@@ -14,7 +20,7 @@ setInterval(update, deltaTime);
 
 let battle = fun();
 
-battle.init(16,16,1000,{h:{1:1,5:1,23:1},v:{3:1,34:1,56:1}},3,deltaTime);
+battle.init(16,16,1000,obstacle,3,deltaTime);
 
 let player = [];
 
