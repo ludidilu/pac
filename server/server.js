@@ -1,40 +1,40 @@
-var io = require('socket.io')();
+let io = require('socket.io')();
 
 io.on('connection', connection);
 
 io.listen(1999);
 
-var messageTag = ["join","command","refresh","getLag"];
+let messageTag = ["join","command","refresh","getLag"];
 
-var fun = require("../lib/battle/battle");
+let fun = require("../lib/battle/battle");
 
 const deltaTime = 20;
 
 setInterval(update, deltaTime);
 
-var battle = fun();
+let battle = fun();
 
 battle.init(16,16,1000,{h:{1:1,5:1,23:1},v:{3:1,34:1,56:1}},3,deltaTime);
 
-var player = [];
+let player = [];
 
-var startTime = new Date().getTime();
+let startTime = new Date().getTime();
 
-var lagTest = false;
+let lagTest = false;
 
-var lagMin = 0;
+let lagMin = 0;
 
-var lagMax = 32;
+let lagMax = 32;
 
-var lagList = [];
+let lagList = [];
 
-var isLagRunning = false;
+let isLagRunning = false;
 
 function update(){
 
-	var result = JSON.stringify(battle.serverUpdate());
+	let result = JSON.stringify(battle.serverUpdate());
 
-	for(var playerID in player){
+	for(let playerID in player){
 
 		sendData(player[playerID], "update", result);
 	}
@@ -45,13 +45,13 @@ function connection(client){
 
 	console.log("one user connection");
 
-	for(var key in messageTag){
+	for(let key in messageTag){
 
-		var dele2 = function(){
+		let dele2 = function(){
 
-			var tag = messageTag[key];
+			let tag = messageTag[key];
 
-			var delegate = function(data){
+			let delegate = function(data){
 
 				getData(client, tag, data);
 			};
@@ -71,9 +71,9 @@ function getData(client, tag, data){
 	}
 	else{
 
-		var runTime = new Date().getTime() + lagMin + Math.random() * (lagMax - lagMin);
+		let runTime = new Date().getTime() + lagMin + Math.random() * (lagMax - lagMin);
 
-		var dele = function(){
+		let dele = function(){
 
 			getDataReal(client, tag, data);
 		}
@@ -88,13 +88,13 @@ function getDataReal(client, tag, data){
 
 		if(!client.playerID){
 
-			var id = data;
+			let id = data;
 
 			client.playerID = id;
 
 			player[id] = client;
 
-			var result = battle.join(id);
+			let result = battle.join(id);
 
 			sendData(client, "refresh", JSON.stringify(result));
 		}
@@ -108,7 +108,7 @@ function getDataReal(client, tag, data){
 	}
 	else if(tag == "refresh"){
 
-		var result = battle.getRefreshData();
+		let result = battle.getRefreshData();
 
 		sendData(client, "refresh", JSON.stringify(result));
 	}
@@ -126,9 +126,9 @@ function sendData(client, tag, data){
 	}
 	else{
 		
-		var runTime = new Date().getTime() + lagMin + Math.random() * (lagMax - lagMin);
+		let runTime = new Date().getTime() + lagMin + Math.random() * (lagMax - lagMin);
 
-		var dele = function(){
+		let dele = function(){
 
 			client.emit(tag, data);
 		}
@@ -151,9 +151,9 @@ function lagRun(){
 
 	isLagRunning = true;
 
-	var nowTime = new Date().getTime();
+	let nowTime = new Date().getTime();
 
-	var obj = lagList.shift();
+	let obj = lagList.shift();
 
 	obj.dele();
 
@@ -161,7 +161,7 @@ function lagRun(){
 
 		obj = lagList[0];
 
-		var gap = obj.runTime - nowTime;
+		let gap = obj.runTime - nowTime;
 
 		if(gap <= 0){
 

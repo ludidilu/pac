@@ -46,29 +46,20 @@ class Main extends egret.DisplayObjectContainer {
 
         this.socket = io.connect("1.1.1.118:1999");
 
-        var socket = this.socket;        
-
         this.socket.on("connect", this.connected.bind(this));
 
-        var tagArr = this.tagArr;
+        let getMessage = this.getMessage.bind(this);
 
-        var getMessage = this.getMessage.bind(this);
+        for(let i:number = 0 ; i < this.tagArr.length ; i++){
 
-        for(var i:number = 0 ; i < tagArr.length ; i++){
+            let tag:string = this.tagArr[i];
 
-            var dele = function(){
+            let dele2:(data:string)=>void = function(data:string){
 
-                var tag = tagArr[i];
-
-                var dele2 = function(data){
-
-                    getMessage(tag, data);
-                }
-
-                socket.on(tag, dele2);
+                getMessage(tag, data);
             }
 
-            dele();
+            this.socket.on(tag, dele2);
         }
     }
 
@@ -92,7 +83,7 @@ class Main extends egret.DisplayObjectContainer {
 
         console.log("egret.Capabilities.renderMode:" + egret.Capabilities.renderMode);
 
-        var sprite:egret.Sprite = new egret.Sprite();
+        let sprite:egret.Sprite = new egret.Sprite();
         sprite.graphics.beginFill(0x000000);
         sprite.graphics.drawRect(0, 0, this.stage.stageWidth, this.stage.stageHeight);
         sprite.graphics.endFill();
@@ -177,11 +168,11 @@ class Main extends egret.DisplayObjectContainer {
     }
 
     public getNetImage(textureObj:any,url:string):void{
-        var imgLoader:egret.ImageLoader = new egret.ImageLoader;
+        let imgLoader:egret.ImageLoader = new egret.ImageLoader;
         imgLoader.crossOrigin = "anonymous";
         imgLoader.once( egret.Event.COMPLETE, (evt:egret.Event)=>{
-           var loader:egret.ImageLoader = evt.currentTarget;
-           var texture = new egret.Texture();
+           let loader:egret.ImageLoader = evt.currentTarget;
+           let texture = new egret.Texture();
            texture.bitmapData = loader.data;
            textureObj["texture"] = texture;
         }, this ); 
@@ -192,7 +183,7 @@ class Main extends egret.DisplayObjectContainer {
     {
         if(tag == "refresh"){
 
-            var refreshDataObj : refreshData = JSON.parse(data);
+            let refreshDataObj:refreshData = JSON.parse(data);
 
             this.refreshData(refreshDataObj);
 
@@ -200,7 +191,7 @@ class Main extends egret.DisplayObjectContainer {
         }
         else if(tag == "update"){
 
-            var roundData : roundData = JSON.parse(data);
+            let roundData:roundData = JSON.parse(data);
 
             this.battleObj.clientUpdate(roundData);
 
@@ -208,9 +199,9 @@ class Main extends egret.DisplayObjectContainer {
         }
         else if(tag == "getLag"){
 
-            var time : number = parseInt(data);            
+            let time:number = parseInt(data);            
 
-            var nowTime = Timer.getRealTime();
+            let nowTime:number = Timer.getRealTime();
 
             this.pingTf.text = (nowTime - time).toString();
         }
@@ -218,7 +209,7 @@ class Main extends egret.DisplayObjectContainer {
 
     private connected():void
     {
-        var name = Math.floor(Math.random() * 100000000).toString();
+        let name:string = Math.floor(Math.random() * 100000000).toString();
 
         console.log("name:" + name);
 

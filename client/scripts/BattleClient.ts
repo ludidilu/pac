@@ -31,7 +31,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
     private initContainer():void{
 
-        var tmpWidth = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
+        let tmpWidth:number = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
 
         this.scaleX = this.mapWidth / tmpWidth;
 
@@ -52,15 +52,15 @@ class BattleClient extends egret.DisplayObjectContainer {
 
     private initBg():void{
 
-        var container:egret.DisplayObjectContainer = new egret.DisplayObjectContainer();
+        let container:egret.DisplayObjectContainer = new egret.DisplayObjectContainer();
 
-        var tmpWidth = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
+        let tmpWidth:number = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
 
         container.scaleX = container.scaleY = tmpWidth / this.mapWidth;
 
         this.bgContainer.addChild(container);
 
-        var sprite:egret.Sprite = new egret.Sprite();
+        let sprite:egret.Sprite = new egret.Sprite();
 
         container.addChild(sprite);
 
@@ -70,7 +70,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
         sprite.graphics.endFill();
 
-        var cellWidth = this.mapWidth / this.battleObj.mapWidth;
+        let cellWidth:number = this.mapWidth / this.battleObj.mapWidth;
 
         sprite = new egret.Sprite();
 
@@ -78,9 +78,9 @@ class BattleClient extends egret.DisplayObjectContainer {
 
         sprite.graphics.beginFill(0x505050);
                 
-        for(var i:number = 0 ; i < this.battleObj.mapWidth ; i++){
+        for(let i:number = 0 ; i < this.battleObj.mapWidth ; i++){
 
-            for(var m:number = 0 ; m < this.battleObj.mapHeight ; m++){
+            for(let m:number = 0 ; m < this.battleObj.mapHeight ; m++){
 
                 if(i % 2 == m % 2){
 
@@ -96,21 +96,21 @@ class BattleClient extends egret.DisplayObjectContainer {
 
     private initMap():void{
 
-        var container:egret.DisplayObjectContainer = new egret.DisplayObjectContainer();
+        let container:egret.DisplayObjectContainer = new egret.DisplayObjectContainer();
 
-        var tmpWidth = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
+        let tmpWidth:number = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
 
         container.scaleX = container.scaleY = tmpWidth / this.mapWidth;
 
         this.mapConainer.addChild(container);
 
-        var key;
+        let key:any;
 
-        var obstacleHeight = this.mapWidth / this.battleObj.mapWidth;
+        let obstacleHeight:number = this.mapWidth / this.battleObj.mapWidth;
 
-        var obstacleWidth = obstacleHeight * this.obstacleWidth;
+        let obstacleWidth:number = obstacleHeight * this.obstacleWidth;
 
-        var sprite:egret.Sprite = new egret.Sprite();
+        let sprite:egret.Sprite = new egret.Sprite();
 
         container.addChild(sprite);
 
@@ -120,11 +120,11 @@ class BattleClient extends egret.DisplayObjectContainer {
 
             for(key in this.battleObj.obstacle.v){
 
-                var n:number = key;
+                let n:number = key;
 
-                var x = n % this.battleObj.mapWidth;
+                let x:number = n % this.battleObj.mapWidth;
 
-                var y = Math.floor(n / this.battleObj.mapWidth);
+                let y:number = Math.floor(n / this.battleObj.mapWidth);
 
                 sprite.graphics.drawRect(x * obstacleHeight, (y + 1) * obstacleHeight - obstacleWidth * 0.5, obstacleHeight, obstacleWidth);
             }
@@ -134,11 +134,11 @@ class BattleClient extends egret.DisplayObjectContainer {
 
             for(key in this.battleObj.obstacle.h){
 
-                n = key;
+                let n:number = key;
 
-                x = n % this.battleObj.mapWidth;
+                let x:number = n % this.battleObj.mapWidth;
 
-                y = Math.floor(n / this.battleObj.mapWidth);
+                let y:number = Math.floor(n / this.battleObj.mapWidth);
 
                 sprite.graphics.drawRect((x + 1) * obstacleHeight - obstacleWidth * 0.5, y * obstacleHeight, obstacleWidth, obstacleHeight);
             }
@@ -151,45 +151,38 @@ class BattleClient extends egret.DisplayObjectContainer {
 
         this.lastGetServerDataTime = Timer.getTime();
 
-        for(var id in this.battleObj.heroArr){
+        for(let id in this.battleObj.heroArr){
 
-            var heroObj:hero = this.battleObj.heroArr[id];
+            let heroObj:hero = this.battleObj.heroArr[id];
 
             if(!this.heroArr[id]){
 
-                var container:egret.DisplayObjectContainer = new egret.DisplayObjectContainer();
+                let container:egret.DisplayObjectContainer = new egret.DisplayObjectContainer();
 
-                var dele = function(){
+                let getImg:(e:egret.Event)=>void = function(event:egret.Event){
 
-                    var c = container;
+                    let loader:egret.ImageLoader = event.currentTarget;  
 
-                    var getImg = function(event:egret.Event){
+                    let tex:egret.Texture = new egret.Texture();
 
-                        var loader:egret.ImageLoader = event.currentTarget;  
+                    tex.bitmapData = loader.data;
 
-                        var tex:egret.Texture = new egret.Texture();
+                    let bitmap:egret.Bitmap = new egret.Bitmap(tex);
 
-                        tex.bitmapData = loader.data;
+                    bitmap.scaleX = this.battleObj.mapUnitWidth / bitmap.width;
 
-                        var bitmap:egret.Bitmap = new egret.Bitmap(tex);
+                    bitmap.scaleY = this.battleObj.mapUnitWidth / bitmap.height;
 
-                        bitmap.scaleX = this.battleObj.mapUnitWidth / bitmap.width;
+                    bitmap.x = -0.5 * bitmap.width * bitmap.scaleX;
 
-                        bitmap.scaleY = this.battleObj.mapUnitWidth / bitmap.height;
+                    bitmap.y = -0.5 * bitmap.height * bitmap.scaleY;
 
-                        bitmap.x = -0.5 * bitmap.width * bitmap.scaleX;
-
-                        bitmap.y = -0.5 * bitmap.height * bitmap.scaleY;
-
-                        c.addChild(bitmap);
-                    }
-
-                    var imgLoader:egret.ImageLoader = new egret.ImageLoader;
-                    imgLoader.once( egret.Event.COMPLETE, getImg, this ); 
-                    imgLoader.load( "resource/assets/red_point.png" );
+                    container.addChild(bitmap);
                 }
-                
-                dele.bind(this)();
+
+                let imgLoader:egret.ImageLoader = new egret.ImageLoader;
+                imgLoader.once( egret.Event.COMPLETE, getImg, this ); 
+                imgLoader.load( "resource/assets/red_point.png" );
 
                 container.x = heroObj.x;
 
@@ -201,11 +194,11 @@ class BattleClient extends egret.DisplayObjectContainer {
             }
         }
 
-        var del:Array<string> = null;
+        let del:Array<string> = null;
 
-        for(var id in this.heroArr){
+        for(let id in this.heroArr){
 
-            container = this.heroArr[id];
+            let container:egret.DisplayObjectContainer = this.heroArr[id];
 
             if(!this.battleObj.heroArr[id]){
 
@@ -222,7 +215,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
         if(del){
 
-            for(var id in del){
+            for(let id in del){
 
                 delete this.heroArr[id];
             }
@@ -231,13 +224,13 @@ class BattleClient extends egret.DisplayObjectContainer {
 
     public updateHero():void{
 
-        for(var key in this.battleObj.heroArr){
+        for(let key in this.battleObj.heroArr){
 
-            var hero = this.heroArr[key];
+            let hero:egret.DisplayObjectContainer = this.heroArr[key];
 
-            var heroObj = this.battleObj.heroArr[key];
+            let heroObj:hero = this.battleObj.heroArr[key];
 
-            var percent:number;
+            let percent:number;
 
             if(heroObj.dir == 0){
 
@@ -249,20 +242,20 @@ class BattleClient extends egret.DisplayObjectContainer {
 
             }else{
 
-                var serverMoveDistance = this.battleObj.moveSpeed * this.tweenTime;
+                let serverMoveDistance:number = this.battleObj.moveSpeed * this.tweenTime;
 
-                var serverPos:Array<vector2> = this.battleObj.getHeroPos(heroObj.x, heroObj.y, heroObj.dir, serverMoveDistance);
+                let serverPos:Array<vector2> = this.battleObj.getHeroPos(heroObj.x, heroObj.y, heroObj.dir, serverMoveDistance);
 
-                var serverFinalPos:vector2 = serverPos[serverPos.length - 1];
+                let serverFinalPos:vector2 = serverPos[serverPos.length - 1];
 
-                var distance = Math.abs(heroObj.x - serverFinalPos.x) + Math.abs(heroObj.y - serverFinalPos.y);
+                let distance:number = Math.abs(heroObj.x - serverFinalPos.x) + Math.abs(heroObj.y - serverFinalPos.y);
 
                 if(distance < serverMoveDistance){
 
                     //hit wall
-                    var clientMoveDistance = this.battleObj.moveSpeed * Timer.getDeltaTime();
+                    let clientMoveDistance:number = this.battleObj.moveSpeed * Timer.getDeltaTime();
 
-                    var needMoveDistance =  Math.abs(hero.x - serverFinalPos.x) + Math.abs(hero.y - serverFinalPos.y);
+                    let needMoveDistance:number =  Math.abs(hero.x - serverFinalPos.x) + Math.abs(hero.y - serverFinalPos.y);
 
                     if(clientMoveDistance > needMoveDistance){
 
@@ -274,7 +267,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
                         percent = clientMoveDistance / needMoveDistance;
 
-                        var fixPos:vector2 = this.getPos(hero.x, hero.y, serverFinalPos.x, serverFinalPos.y, heroObj.dir, percent);
+                        let fixPos:vector2 = this.getPos(hero.x, hero.y, serverFinalPos.x, serverFinalPos.y, heroObj.dir, percent);
                     
                         hero.x = fixPos.x;
 
@@ -285,7 +278,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
                     percent = Timer.getDeltaTime() / (this.lastGetServerDataTime + this.tweenTime - Timer.getTime());
 
-                    var fixPos:vector2 = this.getPos(hero.x, hero.y, serverFinalPos.x, serverFinalPos.y, heroObj.dir, percent);
+                    let fixPos:vector2 = this.getPos(hero.x, hero.y, serverFinalPos.x, serverFinalPos.y, heroObj.dir, percent);
                     
                     hero.x = fixPos.x;
 
@@ -297,15 +290,15 @@ class BattleClient extends egret.DisplayObjectContainer {
 
     private getPos(nowX:number, nowY:number, serverX:number, serverY:number, dir:number, percent:number):vector2{
 
-        var result:vector2 = this.battleObj.getVector2();
+        let result:vector2 = this.battleObj.getVector2();
 
-        var xGap = Math.abs(nowX - serverX);
+        let xGap:number = Math.abs(nowX - serverX);
 
-        var yGap = Math.abs(nowY - serverY);
+        let yGap:number = Math.abs(nowY - serverY);
 
-        var dis = xGap + yGap;
+        let dis:number = xGap + yGap;
 
-        var fixDis = dis * percent;
+        let fixDis:number = dis * percent;
 
         if(dir == 1 || dir == 2){
 
@@ -321,7 +314,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
                     result.x = serverX;
 
-                    var tmp = fixDis - xGap;
+                    let tmp:number = fixDis - xGap;
 
                     result.y = nowY + (serverY > nowY ? tmp : -tmp);
                 }
@@ -347,7 +340,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
                     result.y = serverY;
 
-                    var tmp = fixDis - yGap;
+                    let tmp:number = fixDis - yGap;
 
                     result.x = nowX + (serverX > nowX ? tmp : -tmp);
                 }

@@ -57,9 +57,9 @@ class Joystick extends egret.DisplayObjectContainer{
 
         this.joystickBg.graphics.endFill();
 
-        for(var i:number = 0 ; i < 4 ; i++){
+        for(let i:number = 0 ; i < 4 ; i++){
 
-            var mask:egret.Sprite = new egret.Sprite();
+            let mask:egret.Sprite = new egret.Sprite();
 
             mask.graphics.beginFill(0xffffff);
 
@@ -69,7 +69,7 @@ class Joystick extends egret.DisplayObjectContainer{
 
             this.joystickBg.addChild(mask);
 
-            var sprite:egret.Sprite = new egret.Sprite();
+            let sprite:egret.Sprite = new egret.Sprite();
 
             sprite.graphics.beginFill(0xffff00);
 
@@ -129,7 +129,7 @@ class Joystick extends egret.DisplayObjectContainer{
 
     private touchBegin(e:egret.Event):void{
 
-        var touch:egret.TouchEvent = <egret.TouchEvent>e;
+        let touch:egret.TouchEvent = <egret.TouchEvent>e;
 
         this.hasDown = true;
 
@@ -147,9 +147,9 @@ class Joystick extends egret.DisplayObjectContainer{
             return;
         }
 
-        var touch:egret.TouchEvent = <egret.TouchEvent>e;
+        let touch:egret.TouchEvent = <egret.TouchEvent>e;
 
-        var distance:number = Math.sqrt(Math.abs(touch.stageX - this.downX) * Math.abs(touch.stageX - this.downX) + Math.abs(touch.stageY - this.downY) * Math.abs(touch.stageY - this.downY));
+        let distance:number = Math.sqrt(Math.abs(touch.stageX - this.downX) * Math.abs(touch.stageX - this.downX) + Math.abs(touch.stageY - this.downY) * Math.abs(touch.stageY - this.downY));
 
         if(!this.hasMove){
 
@@ -165,9 +165,9 @@ class Joystick extends egret.DisplayObjectContainer{
             }
         }
         
-        var angle:number = Math.atan2(touch.stageY - this.downY, touch.stageX - this.downX);
+        let angle:number = Math.atan2(touch.stageY - this.downY, touch.stageX - this.downX);
 
-        var dir:number;
+        let dir:number;
 
         if(angle < -Math.PI * 0.25 && angle >= -Math.PI * 0.75){
 
@@ -188,7 +188,7 @@ class Joystick extends egret.DisplayObjectContainer{
 
         this.callback(dir);
 
-        for(var i:number = 0 ; i < 4 ; i++){
+        for(let i:number = 0 ; i < 4 ; i++){
 
             if(i == dir - 1){
 
@@ -231,7 +231,7 @@ class Joystick extends egret.DisplayObjectContainer{
 
             this.joystickBg.visible = false;
 
-            for(var i:number = 0 ; i < 4 ; i++){
+            for(let i:number = 0 ; i < 4 ; i++){
 
                 this.arrowList[i].visible = false;
             }
