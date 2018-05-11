@@ -18,7 +18,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
     private heroContainer:egret.DisplayObjectContainer;
 
-    public init(battleObj:battle){
+    public init(battleObj:battle):void{
 
         this.battleObj = battleObj;
 
@@ -29,7 +29,13 @@ class BattleClient extends egret.DisplayObjectContainer {
         this.initMap();
     }
 
-    private initContainer(){
+    private initContainer():void{
+
+        var tmpWidth = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
+
+        this.scaleX = this.mapWidth / tmpWidth;
+
+        this.scaleY = this.scaleX;
 
         this.bgContainer = new egret.DisplayObjectContainer();
 
@@ -44,17 +50,13 @@ class BattleClient extends egret.DisplayObjectContainer {
         this.addChild(this.heroContainer);
     }
 
-    private initBg(){
+    private initBg():void{
 
         var container:egret.DisplayObjectContainer = new egret.DisplayObjectContainer();
 
         var tmpWidth = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
 
         container.scaleX = container.scaleY = tmpWidth / this.mapWidth;
-
-        this.scaleX = this.mapWidth / tmpWidth;
-
-        this.scaleY = this.scaleX;
 
         this.bgContainer.addChild(container);
 
@@ -92,11 +94,27 @@ class BattleClient extends egret.DisplayObjectContainer {
         sprite.graphics.endFill();
     }
 
-    private initMap(){
+    private initMap():void{
+
+        var container:egret.DisplayObjectContainer = new egret.DisplayObjectContainer();
+
+        var tmpWidth = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
+
+        container.scaleX = container.scaleY = tmpWidth / this.mapWidth;
+
+        this.mapConainer.addChild(container);
 
         var key;
 
-        var obstacleWidth = this.battleObj.mapUnitWidth * this.obstacleWidth;
+        var obstacleHeight = this.mapWidth / this.battleObj.mapWidth;
+
+        var obstacleWidth = obstacleHeight * this.obstacleWidth;
+
+        var sprite:egret.Sprite = new egret.Sprite();
+
+        container.addChild(sprite);
+
+        sprite.graphics.beginFill(0xff0000);
 
         if(this.battleObj.obstacle.v){
 
@@ -108,19 +126,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
                 var y = Math.floor(n / this.battleObj.mapWidth);
 
-                var sprite:egret.Sprite = new egret.Sprite();
-
-                sprite.graphics.beginFill(0xff0000);
-
-                sprite.graphics.drawRect(0, 0, this.battleObj.mapUnitWidth, obstacleWidth);
-
-                sprite.graphics.endFill();
-
-                sprite.x = x * this.battleObj.mapUnitWidth;
-
-                sprite.y = (y + 1) * this.battleObj.mapUnitWidth - obstacleWidth * 0.5;
-
-                this.mapConainer.addChild(sprite);
+                sprite.graphics.drawRect(x * obstacleHeight, (y + 1) * obstacleHeight - obstacleWidth * 0.5, obstacleHeight, obstacleWidth);
             }
         }
 
@@ -134,26 +140,14 @@ class BattleClient extends egret.DisplayObjectContainer {
 
                 y = Math.floor(n / this.battleObj.mapWidth);
 
-                sprite = new egret.Sprite();
-
-                sprite.graphics.beginFill(0xff0000);
-
-                sprite.graphics.drawRect(0, 0, obstacleWidth, this.battleObj.mapUnitWidth);
-
-                sprite.graphics.endFill();
-
-                sprite.x = (x + 1) * this.battleObj.mapUnitWidth - obstacleWidth * 0.5;
-
-                sprite.y = y * this.battleObj.mapUnitWidth;
-
-                this.mapConainer.addChild(sprite);
+                sprite.graphics.drawRect((x + 1) * obstacleHeight - obstacleWidth * 0.5, y * obstacleHeight, obstacleWidth, obstacleHeight);
             }
         }
 
-        this.mapConainer.cacheAsBitmap = true;
+        sprite.graphics.endFill();
     }
 
-    public gameUpdate(){
+    public gameUpdate():void{
 
         this.lastGetServerDataTime = Timer.getTime();
 
@@ -235,7 +229,7 @@ class BattleClient extends egret.DisplayObjectContainer {
         }
     }
 
-    public updateHero(){
+    public updateHero():void{
 
         for(var key in this.battleObj.heroArr){
 
@@ -301,7 +295,7 @@ class BattleClient extends egret.DisplayObjectContainer {
         }
     }
 
-    private getPos(nowX:number, nowY:number, serverX:number, serverY:number, dir:number, percent:number){
+    private getPos(nowX:number, nowY:number, serverX:number, serverY:number, dir:number, percent:number):vector2{
 
         var result:vector2 = this.battleObj.getVector2();
 

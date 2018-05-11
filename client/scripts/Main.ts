@@ -12,7 +12,11 @@ class Main extends egret.DisplayObjectContainer {
 
     private uiContainer:egret.DisplayObjectContainer;
 
+    private fpsContainer:egret.DisplayObjectContainer;
+
     private battleClient:BattleClient;
+
+    private joystick:Joystick;
 
     private btArr:Array<egret.Sprite> = [];
 
@@ -82,6 +86,10 @@ class Main extends egret.DisplayObjectContainer {
 
         this.addChild(this.uiContainer);
 
+        this.fpsContainer = new egret.DisplayObjectContainer();
+
+        this.addChild(this.fpsContainer);
+
         console.log("egret.Capabilities.renderMode:" + egret.Capabilities.renderMode);
 
         var sprite:egret.Sprite = new egret.Sprite();
@@ -91,113 +99,25 @@ class Main extends egret.DisplayObjectContainer {
         this.bgContainer.addChild(sprite);
 
         sprite.touchEnabled = true;
+        
+        this.joystick = new Joystick();
 
-        var dele = function(e:egret.Event){
-
-            var touch:egret.TouchEvent = <egret.TouchEvent>e;
-
-            for(var i:number = 0 ; i < 4 ; i++){
-
-                var bt:egret.Sprite = this.btArr[i];
-
-                if(bt.getTransformedBounds(this).contains(touch.stageX, touch.stageY)){
-
-                    this.touchBegin(i + 1);
-
-                    return;
-                }
-            }
-
-            this.touchEnd();
-        }
-
-        sprite.addEventListener(egret.TouchEvent.TOUCH_BEGIN, dele, this);
-
-        sprite.addEventListener(egret.TouchEvent.TOUCH_MOVE, dele, this);
-
-        sprite.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEnd, this);
-
-        sprite.addEventListener(egret.TouchEvent.TOUCH_RELEASE_OUTSIDE, this.touchEnd, this);
-
-
-        sprite = new egret.Sprite();
-        sprite.graphics.beginFill(0xffffff);
-        sprite.graphics.drawRect(0, 0, 50, 50);
-        sprite.graphics.endFill();
-        sprite.x = 50;
-        sprite.y = this.stage.stageHeight - 50 * 3;
-        this.uiContainer.addChild(sprite);
-
-        this.btArr.push(sprite);
-
-        sprite = new egret.Sprite();
-        sprite.graphics.beginFill(0xffffff);
-        sprite.graphics.drawRect(0, 0, 50, 50);
-        sprite.graphics.endFill();
-        sprite.x = 50;
-        sprite.y = this.stage.stageHeight - 50;
-        this.uiContainer.addChild(sprite);
-
-        this.btArr.push(sprite);
-
-
-        sprite = new egret.Sprite();
-        sprite.graphics.beginFill(0xffffff);
-        sprite.graphics.drawRect(0, 0, 50, 50);
-        sprite.graphics.endFill();
-        sprite.x = 0;
-        sprite.y = this.stage.stageHeight - 50 * 2;
-        this.uiContainer.addChild(sprite);
-
-        this.btArr.push(sprite);
-
-
-        sprite = new egret.Sprite();
-        sprite.graphics.beginFill(0xffffff);
-        sprite.graphics.drawRect(0, 0, 50, 50);
-        sprite.graphics.endFill();
-        sprite.x = 100;
-        sprite.y = this.stage.stageHeight - 50 * 2;
-        this.uiContainer.addChild(sprite);
-
-        this.btArr.push(sprite);
-
-
+        this.joystick.init(sprite, this.uiContainer, this.joystickCallBack.bind(this));
 
         this.pingTf = new egret.TextField();
-        this.uiContainer.addChild(this.pingTf);
+
+        this.fpsContainer.addChild(this.pingTf);
     }
 
-    private touchBegin(index):void
-    {
-        for(var i = 0 ; i < 4 ; i++){
+    private joystickCallBack(index:number):void{
 
-            if(i == index - 1){
+        if(index > -1){
 
-                this.btArr[i].alpha = 0.5;
-            }
-            else{
-
-                this.btArr[i].alpha = 1;
-            }
+            this.socket.emit("command", index);
         }
-
-        this.socket.emit("command", index);
     }
 
-    private touchEnd():void
-    {
-        for(var i = 0 ; i < 4 ; i++){
-            
-            var sprite = this.btArr[i];
-
-            sprite.alpha = 1;
-        }
-
-        this.socket.emit("command", 0);
-    }
-
-    private update(time):boolean
+    private update(time:number):boolean
     {
         Timer.update(time);
 
@@ -214,7 +134,7 @@ class Main extends egret.DisplayObjectContainer {
 
     private pingGap:number = 1000;
 
-    private updatePing(){
+    private updatePing():void{
 
         if(Timer.getRealTime() - this.lastPingTime > this.pingGap){
 
