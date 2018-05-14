@@ -20,7 +20,7 @@ setInterval(update, deltaTime);
 
 let battle = fun();
 
-battle.init(1000,obstacle,3,deltaTime);
+battle.init(10000,obstacle,deltaTime);
 
 let player = [];
 

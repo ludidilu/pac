@@ -242,7 +242,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
             }else{
 
-                let serverMoveDistance:number = this.battleObj.moveSpeed * this.tweenTime;
+                let serverMoveDistance:number = heroObj.moveSpeed * this.tweenTime;
 
                 let serverPos:Array<vector2> = this.battleObj.getHeroPos(heroObj.x, heroObj.y, heroObj.dir, serverMoveDistance);
 
@@ -253,7 +253,7 @@ class BattleClient extends egret.DisplayObjectContainer {
                 if(distance < serverMoveDistance){
 
                     //hit wall
-                    let clientMoveDistance:number = this.battleObj.moveSpeed * Timer.getDeltaTime();
+                    let clientMoveDistance:number = heroObj.moveSpeed * Timer.getDeltaTime();
 
                     let needMoveDistance:number =  Math.abs(hero.x - serverFinalPos.x) + Math.abs(hero.y - serverFinalPos.y);
 

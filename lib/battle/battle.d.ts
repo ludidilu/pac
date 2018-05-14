@@ -2,7 +2,7 @@ declare class battle{
 
 	heroArr:{[key:string]:hero};
 	
-	init(mapScale:number, obstacle:obstacleData, moveSpeed:number, deltaTime:number):void;
+	init(mapScale:number, obstacle:obstacleData, deltaTime:number):void;
 
 	clientUpdate(data:roundData):void;
 
@@ -15,8 +15,6 @@ declare class battle{
 	mapUnitWidth:number;
 
 	obstacle:obstacleData;
-
-	moveSpeed:number;
 
 	deltaTime:number;
 
@@ -49,14 +47,12 @@ declare class refreshData{
 
 	obstacle:obstacleData;
 
-	moveSpeed:number;
-
 	deltaTime:number;
 }
 
 declare class roundData{
 
-	joinArr:Array<string>;
+	joinArr:Array<hero>;
 
 	commandArr:{[key:string]:number};
 }
@@ -66,6 +62,8 @@ declare class hero{
 	id:string;
 
 	dir:number;
+
+	moveSpeed:number;
 
 	x:number;
 
