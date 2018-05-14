@@ -31,7 +31,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
     private initContainer():void{
 
-        let tmpWidth:number = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
+        let tmpWidth:number = this.battleObj.obstacle.mapWidth * this.battleObj.mapUnitWidth;
 
         this.scaleX = this.mapWidth / tmpWidth;
 
@@ -54,7 +54,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
         let container:egret.DisplayObjectContainer = new egret.DisplayObjectContainer();
 
-        let tmpWidth:number = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
+        let tmpWidth:number = this.battleObj.obstacle.mapWidth * this.battleObj.mapUnitWidth;
 
         container.scaleX = container.scaleY = tmpWidth / this.mapWidth;
 
@@ -66,11 +66,11 @@ class BattleClient extends egret.DisplayObjectContainer {
 
         sprite.graphics.beginFill(0x808080);
 
-        sprite.graphics.drawRect(0,0,this.mapWidth, this.mapWidth * this.battleObj.mapHeight / this.battleObj.mapWidth);
+        sprite.graphics.drawRect(0,0,this.mapWidth, this.mapWidth * this.battleObj.obstacle.mapHeight / this.battleObj.obstacle.mapWidth);
 
         sprite.graphics.endFill();
 
-        let cellWidth:number = this.mapWidth / this.battleObj.mapWidth;
+        let cellWidth:number = this.mapWidth / this.battleObj.obstacle.mapWidth;
 
         sprite = new egret.Sprite();
 
@@ -78,9 +78,9 @@ class BattleClient extends egret.DisplayObjectContainer {
 
         sprite.graphics.beginFill(0x505050);
                 
-        for(let i:number = 0 ; i < this.battleObj.mapWidth ; i++){
+        for(let i:number = 0 ; i < this.battleObj.obstacle.mapWidth ; i++){
 
-            for(let m:number = 0 ; m < this.battleObj.mapHeight ; m++){
+            for(let m:number = 0 ; m < this.battleObj.obstacle.mapHeight ; m++){
 
                 if(i % 2 == m % 2){
 
@@ -98,7 +98,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
         let container:egret.DisplayObjectContainer = new egret.DisplayObjectContainer();
 
-        let tmpWidth:number = this.battleObj.mapWidth * this.battleObj.mapUnitWidth;
+        let tmpWidth:number = this.battleObj.obstacle.mapWidth * this.battleObj.mapUnitWidth;
 
         container.scaleX = container.scaleY = tmpWidth / this.mapWidth;
 
@@ -106,7 +106,7 @@ class BattleClient extends egret.DisplayObjectContainer {
 
         let key:any;
 
-        let obstacleHeight:number = this.mapWidth / this.battleObj.mapWidth;
+        let obstacleHeight:number = this.mapWidth / this.battleObj.obstacle.mapWidth;
 
         let obstacleWidth:number = obstacleHeight * this.obstacleWidth;
 
@@ -122,9 +122,9 @@ class BattleClient extends egret.DisplayObjectContainer {
 
                 let n:number = key;
 
-                let x:number = n % this.battleObj.mapWidth;
+                let x:number = n % this.battleObj.obstacle.mapWidth;
 
-                let y:number = Math.floor(n / this.battleObj.mapWidth);
+                let y:number = Math.floor(n / this.battleObj.obstacle.mapWidth);
 
                 sprite.graphics.drawRect(x * obstacleHeight, (y + 1) * obstacleHeight - obstacleWidth * 0.5, obstacleHeight, obstacleWidth);
             }
@@ -136,9 +136,9 @@ class BattleClient extends egret.DisplayObjectContainer {
 
                 let n:number = key;
 
-                let x:number = n % this.battleObj.mapWidth;
+                let x:number = n % this.battleObj.obstacle.mapWidth;
 
-                let y:number = Math.floor(n / this.battleObj.mapWidth);
+                let y:number = Math.floor(n / this.battleObj.obstacle.mapWidth);
 
                 sprite.graphics.drawRect((x + 1) * obstacleHeight - obstacleWidth * 0.5, y * obstacleHeight, obstacleWidth, obstacleHeight);
             }

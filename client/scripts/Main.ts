@@ -139,7 +139,7 @@ class Main extends egret.DisplayObjectContainer {
 
         this.battleObj = fun();
 
-        this.battleObj.init(refreshDataObj.mapWidth, refreshDataObj.mapHeight, refreshDataObj.mapScale, refreshDataObj.obstacle, refreshDataObj.moveSpeed, refreshDataObj.deltaTime);
+        this.battleObj.init(refreshDataObj.mapScale, refreshDataObj.obstacle, refreshDataObj.moveSpeed, refreshDataObj.deltaTime);
 
         this.battleObj.setRefreshData(refreshDataObj);
 
@@ -147,7 +147,7 @@ class Main extends egret.DisplayObjectContainer {
 
         this.battleClient.x = (this.stage.stageWidth - this.battleClient.mapWidth) * 0.5;
 
-        this.battleClient.y = (this.stage.stageHeight - this.battleClient.mapWidth * this.battleObj.mapHeight / this.battleObj.mapWidth) * 0.5;
+        this.battleClient.y = (this.stage.stageHeight - this.battleClient.mapWidth * this.battleObj.obstacle.mapHeight / this.battleObj.obstacle.mapWidth) * 0.5;
 
         this.battleContainer.addChild(this.battleClient);
 

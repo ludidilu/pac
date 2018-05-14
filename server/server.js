@@ -1,6 +1,6 @@
 var fs = require("fs");
 
-var obstacleStr = fs.readFileSync(__dirname + '/../data/aaa.dat', "utf8");
+var obstacleStr = fs.readFileSync(__dirname + '/../data/ss.map', "utf8");
 
 var obstacle = JSON.parse(obstacleStr);
 
@@ -20,7 +20,7 @@ setInterval(update, deltaTime);
 
 let battle = fun();
 
-battle.init(16,16,1000,obstacle,3,deltaTime);
+battle.init(1000,obstacle,3,deltaTime);
 
 let player = [];
 
