@@ -55,6 +55,8 @@ declare class roundData{
 	joinArr:Array<hero>;
 
 	commandArr:{[key:string]:number};
+
+	hitArr:Array<Array<number>>;
 }
 
 declare class hero{

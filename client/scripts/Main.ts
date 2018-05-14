@@ -195,6 +195,11 @@ class Main extends egret.DisplayObjectContainer {
 
             this.battleObj.clientUpdate(roundData);
 
+            for(var key in roundData.hitArr){
+
+                console.log(roundData.hitArr[key][0] + "  " + roundData.hitArr[key][1]);
+            }
+
             this.gameUpdate();
         }
         else if(tag == "getLag"){
