@@ -14,7 +14,7 @@ let messageTag = ["join","command","refresh","getLag"];
 
 let fun = require("../lib/battle/battle");
 
-const deltaTime = 20;
+const deltaTime = 50;
 
 setInterval(update, deltaTime);
 
